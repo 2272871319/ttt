@@ -1,13 +1,18 @@
 package com.bjpowernode.crm.settings.web.controller;
 
 import com.bjpowernode.crm.commons.utils.MD5Util;
+import com.bjpowernode.crm.commons.utils.Result;
+import com.bjpowernode.crm.settings.domain.User;
 import com.bjpowernode.crm.settings.mapper.UserMapper;
+import com.bjpowernode.crm.settings.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,18 +24,36 @@ import java.util.Map;
 @Controller
 public class UserController {
 
+    @Autowired
+    private UserService userService;
+
     @RequestMapping("/settings/qx/user/toLogin.do")
     public String toLogin() {
         return "settings/qx/user/login";
     }
 
+
     @RequestMapping("/settings/qx/user/login.do")
-    public @ResponseBody Object login(String loginAct,String loginPwd){
+    public @ResponseBody Object login(HttpServletRequest request, String loginAct, String loginPwd){
         Map<String,Object> paraMap = new HashMap<>();
         paraMap.put("loginAct",loginAct);
         paraMap.put("loginPwd", MD5Util.getMD5(loginPwd));
 
-        
-        return null;
+        //去数据库查看有么有获取的账号和密码
+        User user = userService.querySelectLoginActAndPwd(paraMap);
+
+        //创建一个map集合存储返回的信息
+        Map<String,Object> map = new HashMap<>();
+
+        //判断返回的对象为空则密码错误
+        if (user == null){
+            return Result.fail("账号或密码不匹配");
+        }
+
+        //返回的对象
+        request.getSession().setAttribute("sessionUser", user);
+        //密码正确
+        //密码正确
+        return Result.success();
     }
 }

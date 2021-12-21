@@ -13,8 +13,32 @@
 <script type="text/javascript">
 $(function () {
 	//给"登录"按钮添加单击事件
-	$("#loginBtn").click(function () {
-		window.location.href="workbench/index.do";
+	$("#loginBtn").on("click",function () {
+		var loginAct = $.trim($("#loginAct").val());
+		var loginPwd = $("#loginPwd").val();
+
+		if (loginAct == '' || loginPwd == ''){
+			$("#msg").html("账号密码不能为空")
+			return;
+		}
+
+		$.ajax({
+			url:"settings/qx/user/login.do",
+			type:"post",
+			data:{
+				loginAct:loginAct,
+				loginPwd:loginPwd},
+			success:function(data){
+
+				if (data.code == 1){
+					$("#msg").html("");
+					window.location.href="workbench/index.do";
+				}else {
+					$("#msg").html(data.message)
+				}
+			}
+		});
+
 	});
 });
 </script>
