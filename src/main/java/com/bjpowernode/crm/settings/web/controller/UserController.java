@@ -1,5 +1,6 @@
 package com.bjpowernode.crm.settings.web.controller;
 
+import com.bjpowernode.crm.commons.contants.Constants;
 import com.bjpowernode.crm.commons.utils.MD5Util;
 import com.bjpowernode.crm.commons.utils.Result;
 import com.bjpowernode.crm.settings.domain.User;
@@ -13,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,7 +38,7 @@ public class UserController {
 
 
     @RequestMapping("/settings/qx/user/login.do")
-    public @ResponseBody Object login(HttpServletRequest request, String loginAct, String loginPwd){
+    public @ResponseBody Object login(HttpServletRequest request, String loginAct, String loginPwd) throws ParseException {
         Map<String,Object> paraMap = new HashMap<>();
         paraMap.put("loginAct",loginAct);
         paraMap.put("loginPwd", MD5Util.getMD5(loginPwd));
@@ -50,9 +54,22 @@ public class UserController {
             return Result.fail("账号或密码不匹配");
         }
 
+        //验证账号失效时间
+        if (!"".equals(user.getExpireTime())&& new Date().compareTo(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(user.getExpireTime()))>0){
+            return Result.fail("账号已失效");
+        }
+
+        //判断账号锁定状态lock_state为0 则被锁定
+        if (user.getLockState().equals("0")){
+            return Result.fail("账号已被锁定，请联系管理员解封");
+        }
+        //判断账号ip地址
+        String localAddr = request.getLocalAddr();
+        if (!user.getAllowIps().contains(localAddr)&&!"".equals(user.getAllowIps())){
+            return Result.fail("ip不能用");
+        }
         //返回的对象
-        request.getSession().setAttribute("sessionUser", user);
-        //密码正确
+        request.getSession().setAttribute(Constants.SESSION_USER, user);
         //密码正确
         return Result.success();
     }
