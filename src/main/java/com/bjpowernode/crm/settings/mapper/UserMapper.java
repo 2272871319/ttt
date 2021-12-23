@@ -23,4 +23,11 @@ public interface UserMapper {
      * @return
      */
     User selectLoginActAndPwd(Map<String, Object> paraMap);
+
+    /**
+     * 根据账号查询用户信息
+     * @param loginAct
+     * @return
+     */
+    User selectLoginAct(String loginAct);
 }

@@ -16,6 +16,7 @@ $(function () {
 	$("#loginBtn").on("click",function () {
 		var loginAct = $.trim($("#loginAct").val());
 		var loginPwd = $("#loginPwd").val();
+		var isRemPwd = $("#isRemPwd").prop("checked");
 
 		if (loginAct == '' || loginPwd == ''){
 			$("#msg").html("账号密码不能为空")
@@ -27,14 +28,16 @@ $(function () {
 			type:"post",
 			data:{
 				loginAct:loginAct,
-				loginPwd:loginPwd},
+				loginPwd:loginPwd,
+				isRemPwd:isRemPwd
+				},
 			success:function(data){
-
 				if (data.code == 1){
+
 					$("#msg").html("");
 					window.location.href="workbench/index.do";
 				}else {
-					$("#msg").html(data.message)
+					$("#msg").html(data.message);
 				}
 			}
 		});

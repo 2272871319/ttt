@@ -23,4 +23,15 @@ public class UserServiceImpl implements UserService {
 
         return userMapper.selectLoginActAndPwd(paraMap);
     }
+
+    /**
+     * 根据账号查询信息
+     * @param loginAct
+     * @return
+     */
+
+    @Override
+    public User selectLoginAct(String loginAct) {
+        return userMapper.selectLoginAct(loginAct);
+    }
 }

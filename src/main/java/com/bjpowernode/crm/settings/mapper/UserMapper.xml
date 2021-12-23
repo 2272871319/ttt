@@ -187,8 +187,16 @@
   </update>
 
   <select id="selectLoginActAndPwd" resultMap="BaseResultMap">
-    select <include refid="Base_Column_List"></include>
+    select <include refid="Base_Column_List"/>
     from tbl_user
     where login_act=#{loginAct} and login_pwd = #{loginPwd}
+  </select>
+
+  <select id="selectLoginAct" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/>
+    from
+         tbl_user
+    where
+          login_act=#{loginAct}
   </select>
 </mapper>

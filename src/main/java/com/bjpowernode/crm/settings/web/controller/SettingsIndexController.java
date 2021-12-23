@@ -9,4 +9,10 @@ public class SettingsIndexController {
     public String index(){
         return "settings/index";
     }
+
+    @RequestMapping("/settings/dictionary/index.do")
+    public String dicIndex(){
+
+        return "settings/dictionary/index";
+    }
 }

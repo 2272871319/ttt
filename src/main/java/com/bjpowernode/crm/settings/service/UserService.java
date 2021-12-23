@@ -17,4 +17,11 @@ public interface UserService {
      * @return
      */
     User querySelectLoginActAndPwd(Map<String, Object> paraMap);
+
+    /**
+     * 根据账号查找信息
+     * @param loginAct
+     * @return
+     */
+    User selectLoginAct(String loginAct);
 }
