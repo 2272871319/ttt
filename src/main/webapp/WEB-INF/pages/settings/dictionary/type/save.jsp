@@ -19,7 +19,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 		//编码框添加失去焦点事件
 	    $("#create-code").on("blur",function () {
 	    	//获取编码框的内容
-			var createCode = $.trim($("#create-code").val())
+			var createCode = $.trim($("#create-code").val());
 			//判断编码框
 			if(createCode == ""){
 				$("#codeMsg").text("编码不能为空")
@@ -41,8 +41,40 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 				}
 			})
 
-		})
+		});
 
+		//保存按钮添加事件
+		$("#saveCreateDicTypeBtn").on("click",function () {
+			//为编码框添加失去焦点事件
+			$("#create-code").blur();
+			//获取错误信息
+		 var codeMsg =	$("#codeMsg").text();
+			if (codeMsg != ""){
+				return;
+			}
+			//获取页面其他元素
+			var code = $.trim($("#create-code").val());
+			var createName = $.trim($("#create-name").val());
+			var description = $.trim($("#create-description").val());
+			//发起保存请求
+
+			$.ajax({
+				url:"settings/dictionary/type/saveCreateDicType.do",
+				type:"post",
+				data:{
+					code:code,
+					name:createName,
+					description:description
+				},
+				success:function (data) {
+					if (data.code ==1){
+						window.location.href = "settings/dictionary/type/index.do";
+					}else {
+						alert(data.message)
+					}
+				}
+			})
+		})
 	})
 	</script>
 </head>

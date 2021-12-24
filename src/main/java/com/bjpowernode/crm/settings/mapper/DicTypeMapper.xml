@@ -73,4 +73,11 @@
     select <include refid="Base_Column_List"></include>
     from tbl_dic_type
   </select>
+
+  <delete id="deleteDicType">
+    delete from tbl_dic_type where code in
+  <foreach collection="array" open="(" close=")" separator="," item="code">
+    #{code}
+  </foreach>
+  </delete>
 </mapper>

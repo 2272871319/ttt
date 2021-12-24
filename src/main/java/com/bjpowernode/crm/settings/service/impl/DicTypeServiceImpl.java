@@ -27,4 +27,20 @@ public class DicTypeServiceImpl implements DicTypeService {
     public DicType querydicTypeByCode(String code) {
         return dicTypeMapper.selectByPrimaryKey(code);
     }
+
+    @Override
+    public int saveCreateDicType(DicType dicType) {
+        return dicTypeMapper.insertSelective(dicType);
+    }
+
+    @Override
+    public int saveEditDicType(DicType dicType) {
+
+        return dicTypeMapper.updateByPrimaryKeySelective(dicType);
+    }
+
+    @Override
+    public int deleteDicType(String[] code) {
+        return dicTypeMapper.deleteDicType(code);
+    }
 }

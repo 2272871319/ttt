@@ -23,4 +23,26 @@ public interface DicTypeService {
      * @return
      */
     DicType querydicTypeByCode(String code);
+
+    /**
+     * 保存数据
+     * @param dicType
+     * @return
+     */
+    int saveCreateDicType(DicType dicType);
+
+    /**
+     * 更新数据字典类型
+     * @param dicType
+     * @return
+     */
+    int saveEditDicType(DicType dicType);
+
+    /**
+     * 批量删除
+     * @param code
+     * @return
+     */
+    int deleteDicType(String[] code);
+
 }

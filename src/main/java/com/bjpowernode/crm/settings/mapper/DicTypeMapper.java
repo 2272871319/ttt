@@ -22,4 +22,12 @@ public interface DicTypeMapper {
      * @return
      */
     List<DicType> queryAllDicTypeList();
+
+    /**
+     * 批量删除
+     * @param code
+     * @return
+     */
+    int deleteDicType(String[] code);
+
 }

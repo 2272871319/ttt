@@ -20,10 +20,71 @@
 		$(function(){
 			//获取字典类型列表发起请求
 			queryAllDicTypeList();
+			//创建按钮
 			$("#createDicTypeBtn").on("click",function () {
 				window.location.href="settings/dictionary/type/createDicTypeBtn.do"
 			})
-		})
+
+			//全选全不选
+			$("#chkedAll").on("click",function () {
+				$("#tBody input[type = 'checkbox']").prop("checked",$("#chkedAll").prop("checked"))
+			})
+
+			//反选
+			$("#tBody").on("click","input[type = 'checkbox']",function () {
+				// if ($("#tBody input[type = 'checkbox']:checked").size() == $("#tBody input[type = 'checkbox']").size() ){
+				// 	$("#chkedAll").prop("checked",true)
+				// }else {
+				// 	$("#chkedAll").prop("checked",false)
+				// }
+				$("#chkedAll").prop("checked",$("#tBody input[type='checkbox']").size() == $("#tBody input[type='checkbox']:checked").length)
+			})
+
+			//编辑按钮
+			$("#editDicTypeBtn").on("click",function () {
+				//如果被选中的复选框不是一个
+				var checkeds = $("#tBody input[type='checkbox']:checked");
+				if (checkeds.length != 1){
+					alert("请选择 1 条内容操作")
+					return;
+				}
+				var code = checkeds.val();
+
+				window.location.href = "settings/dictionary/type/editDicTypePage.do?code="+code;
+			})
+
+			//删除按钮添加事件
+			$("#deleteDicTypeBtn").on("click",function () {
+				var checkeds = $("#tBody input[type='checkbox']:checked")
+				if (checkeds.length==0){
+					alert("还没选择哦");
+					return
+				}
+				if (confirm("确定要删除吗")){
+					//获取要删除的标识
+					var codes = "";
+					$.each(checkeds,function (index,obj) {
+						codes += "code="+$(obj).val()+"&";
+					});
+					codes=codes.substring(0,codes.length-1);
+
+					$.ajax({
+						url:"settings/dictionary/type/deleteDicType.do",
+						type:"post",
+						data:codes,
+						success:function (data) {
+							if (data.code==1){
+								queryAllDicTypeList();
+							}else {
+								alert(data.message)
+							}
+						}
+					})
+				}
+
+
+			})
+		});
 
 		//字典类型列表
 		function queryAllDicTypeList() {
@@ -35,18 +96,27 @@
 				    var htmlStr = "";
 					//遍历返回的字典类型表DicType表的list集合
 					$.each(data,function (index,obj) {
-						htmlStr += "<tr class=\"active\">";
-						htmlStr += "<td><input type=\"checkbox\" /></td>";
-						htmlStr += "<td>"+index+"</td>";
+						if (index % 2 ==0){
+							htmlStr += "<tr class=\"active\" id=\"\"+obj.code+\"\">";
+						}else {
+							htmlStr += "<tr>";
+						}
+						htmlStr += "<td><input type=\"checkbox\" value=\""+obj.code+"\"/></td>";
+						htmlStr += "<td>"+(index+1)+"</td>";
 						htmlStr += "<td>"+obj.code+"</td>";
 						htmlStr += "<td>"+obj.name+"</td>";
 						htmlStr += "<td>"+obj.description+"</td>";
 						htmlStr += "</tr>";
+
+
 					});
 					$("#tBody").html(htmlStr);
 				}
 			})
 		}
+
+		//全选全不选
+
 	</script>
 
 </head>

@@ -13,6 +13,36 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 
 <script type="text/javascript" src="jquery/jquery-1.11.1-min.js"></script>
 <script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
+
+	<script type="text/javascript">
+		$(function () {
+
+			//更新按钮添加事件
+			$("#saveEditDicTypeBtn").on("click",function () {
+				var code = $("#edit-code").val()
+				var name = $("#edit-name").val()
+				var description = $("#edit-description").val()
+
+				$.ajax({
+					url:"settings/dictionary/type/saveEditDicType.do",
+					type:"post",
+					data:{
+						code:code,
+						name:name,
+						description:description
+					},
+					success:function (data) {
+						if (data.code == 1){
+							window.location.href = "settings/dictionary/type/index.do"
+						}else {
+							alert(data.message)
+						}
+					}
+				})
+			})
+
+		})
+	</script>
 </head>
 <body>
 
@@ -25,21 +55,21 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 		<hr style="position: relative; top: -40px;">
 	</div>
 	<form class="form-horizontal" role="form">
-					
+
 		<div class="form-group">
 			<label for="edit-code" class="col-sm-2 control-label">编码<span style="font-size: 15px; color: red;">*</span></label>
 			<div class="col-sm-10" style="width: 300px;">
-				<input type="text" class="form-control" id="edit-code" style="width: 200%;" value="${dicType.code}" disabled>
+				<input type="text" class="form-control" id="edit-code" style="width: 200%;" value="${dicType.code}" readonly>
 			</div>
 		</div>
-		
+
 		<div class="form-group">
 			<label for="edit-name" class="col-sm-2 control-label">名称</label>
 			<div class="col-sm-10" style="width: 300px;">
 				<input type="text" class="form-control" id="edit-name" style="width: 200%;" value="${dicType.name}">
 			</div>
 		</div>
-		
+
 		<div class="form-group">
 			<label for="edit-description" class="col-sm-2 control-label">描述</label>
 			<div class="col-sm-10" style="width: 300px;">
@@ -47,7 +77,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 			</div>
 		</div>
 	</form>
-	
+
 	<div style="height: 200px;"></div>
 </body>
 </html>
