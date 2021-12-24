@@ -12,6 +12,43 @@
 <script type="text/javascript" src="jquery/jquery-1.11.1-min.js"></script>
 <script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
 
+	<script type="text/javascript">
+		// $(document).ready(function(){
+		// 	alert("-------------")
+		// })
+
+		$(function(){
+			//获取字典类型列表发起请求
+			queryAllDicTypeList();
+			$("#createDicTypeBtn").on("click",function () {
+				window.location.href="settings/dictionary/type/createDicTypeBtn.do"
+			})
+		})
+
+		//字典类型列表
+		function queryAllDicTypeList() {
+			$.ajax({
+				url:"settings/dictionary/type/queryAllDicTypeList.do",
+				date:"get",
+				success:function (data) {
+					//创建一个拼接的字符串
+				    var htmlStr = "";
+					//遍历返回的字典类型表DicType表的list集合
+					$.each(data,function (index,obj) {
+						htmlStr += "<tr class=\"active\">";
+						htmlStr += "<td><input type=\"checkbox\" /></td>";
+						htmlStr += "<td>"+index+"</td>";
+						htmlStr += "<td>"+obj.code+"</td>";
+						htmlStr += "<td>"+obj.name+"</td>";
+						htmlStr += "<td>"+obj.description+"</td>";
+						htmlStr += "</tr>";
+					});
+					$("#tBody").html(htmlStr);
+				}
+			})
+		}
+	</script>
+
 </head>
 <body>
 
@@ -58,6 +95,6 @@
 			</tbody>
 		</table>
 	</div>
-	
+
 </body>
 </html>

@@ -13,6 +13,7 @@
 
 </head>
 <body>
-	<img src="image/home.png" style="position: relative;top: -10px; left: -10px;"/>
+<h1>欢迎光临</h1>
+<img src="image/home.png" style="position: relative;top: -10px; left: -10px;"/>
 </body>
 </html>

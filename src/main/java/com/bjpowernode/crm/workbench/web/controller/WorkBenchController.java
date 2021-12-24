@@ -14,7 +14,12 @@ public class WorkBenchController {
     @RequestMapping("/workbench/index.do")
     public String index() {
 
-
         return "workbench/index";
+    }
+
+    //自己写的工作台主页面
+    @RequestMapping("/workbench/main/index.do")
+    public String hello(){
+        return "workbench/main/index";
     }
 }

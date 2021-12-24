@@ -10,7 +10,7 @@
     code, name, description
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from tbl_dic_type
     where code = #{code,jdbcType=VARCHAR}
@@ -68,4 +68,9 @@
       description = #{description,jdbcType=VARCHAR}
     where code = #{code,jdbcType=VARCHAR}
   </update>
+
+  <select id="queryAllDicTypeList" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"></include>
+    from tbl_dic_type
+  </select>
 </mapper>
