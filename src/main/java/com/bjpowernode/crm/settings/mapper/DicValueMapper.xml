@@ -12,7 +12,7 @@
     id, value, text, order_no, type_code
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from tbl_dic_value
     where id = #{id,jdbcType=CHAR}
@@ -22,9 +22,9 @@
     where id = #{id,jdbcType=CHAR}
   </delete>
   <insert id="insert" parameterType="com.bjpowernode.crm.settings.domain.DicValue">
-    insert into tbl_dic_value (id, value, text, 
+    insert into tbl_dic_value (id, value, text,
       order_no, type_code)
-    values (#{id,jdbcType=CHAR}, #{value,jdbcType=VARCHAR}, #{text,jdbcType=VARCHAR}, 
+    values (#{id,jdbcType=CHAR}, #{value,jdbcType=VARCHAR}, #{text,jdbcType=VARCHAR},
       #{orderNo,jdbcType=VARCHAR}, #{typeCode,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.bjpowernode.crm.settings.domain.DicValue">
@@ -90,4 +90,17 @@
       type_code = #{typeCode,jdbcType=VARCHAR}
     where id = #{id,jdbcType=CHAR}
   </update>
+<!--查询全部-->
+  <select id="queryAllDicValueList" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/>
+    from tbl_dic_value
+  </select>
+
+<!--  批量删除-->
+  <delete id="deleteDicValueBtn">
+    delete from tbl_dic_value where id in
+        <foreach collection="array" open="(" close=")" separator="," item="id">
+          #{id}
+        </foreach>
+  </delete>
 </mapper>

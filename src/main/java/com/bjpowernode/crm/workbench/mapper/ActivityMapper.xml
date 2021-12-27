@@ -15,11 +15,11 @@
     <result column="edit_by" jdbcType="VARCHAR" property="editBy" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, owner, name, start_date, end_date, cost, description, create_time, create_by, 
+    id, owner, name, start_date, end_date, cost, description, create_time, create_by,
     edit_time, edit_by
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from tbl_activity
     where id = #{id,jdbcType=CHAR}
@@ -29,13 +29,13 @@
     where id = #{id,jdbcType=CHAR}
   </delete>
   <insert id="insert" parameterType="com.bjpowernode.crm.workbench.domain.Activity">
-    insert into tbl_activity (id, owner, name, start_date, 
-      end_date, cost, description, 
-      create_time, create_by, edit_time, 
+    insert into tbl_activity (id, owner, name, start_date,
+      end_date, cost, description,
+      create_time, create_by, edit_time,
       edit_by)
-    values (#{id,jdbcType=CHAR}, #{owner,jdbcType=CHAR}, #{name,jdbcType=VARCHAR}, #{startDate,jdbcType=CHAR}, 
-      #{endDate,jdbcType=CHAR}, #{cost,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
-      #{createTime,jdbcType=CHAR}, #{createBy,jdbcType=VARCHAR}, #{editTime,jdbcType=CHAR}, 
+    values (#{id,jdbcType=CHAR}, #{owner,jdbcType=CHAR}, #{name,jdbcType=VARCHAR}, #{startDate,jdbcType=CHAR},
+      #{endDate,jdbcType=CHAR}, #{cost,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR},
+      #{createTime,jdbcType=CHAR}, #{createBy,jdbcType=VARCHAR}, #{editTime,jdbcType=CHAR},
       #{editBy,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.bjpowernode.crm.workbench.domain.Activity">
@@ -161,4 +161,10 @@
       edit_by = #{editBy,jdbcType=VARCHAR}
     where id = #{id,jdbcType=CHAR}
   </update>
+
+<!--  查看全部市场活动-->
+  <select id="selectAllActivityList" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"></include>
+    from tbl_activity
+  </select>
 </mapper>

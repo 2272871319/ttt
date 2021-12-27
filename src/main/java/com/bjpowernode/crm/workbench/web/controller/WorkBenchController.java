@@ -3,6 +3,8 @@ package com.bjpowernode.crm.workbench.web.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.awt.*;
+
 /**
  * ClassName:
  * Package:com.bjpowernode.crm.workbench.web.controller
@@ -22,4 +24,25 @@ public class WorkBenchController {
     public String hello(){
         return "workbench/main/index";
     }
+
+
+
+    /**
+     * 线索
+     * @return
+     */
+    @RequestMapping("workbench/clue/index.do")
+    public String clue(){
+        return "workbench/clue/index";
+    }
+
+    /**
+     * 交易
+     * @return
+     */
+    @RequestMapping("workbench/transaction/index.do")
+    public String transaction(){
+        return "workbench/transaction/index";
+    }
+
 }

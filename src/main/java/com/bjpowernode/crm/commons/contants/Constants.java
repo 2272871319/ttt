@@ -13,4 +13,5 @@ public class Constants {
     public static final Integer RETURN_SUCCESS = 1;
 
     public static final String SESSION_USER = "sessionUser";
+    public static final String RETURN_DATA = "data";
 }

@@ -11,6 +11,94 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 
 <script type="text/javascript" src="jquery/jquery-1.11.1-min.js"></script>
 <script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/commons.js"></script>
+	<script type="text/javascript">
+		$(function () {
+			//查询全部字典值
+			queryAllDicValueList();
+			// //全选
+			// $("#checkAll").on("click",function () {
+			// 	$("#tBody input[type=checkbox]").prop("checked",$("#checkAll").prop("checked"))
+			// });
+			// //反选
+			// $("#tBody").on("click","input[type=checkbox]",function () {
+			//
+			// 	$("#checkAll").prop("checked",$("#tBody input[type=checkbox]:checked").length == $("#tBody input[type=checkbox]").length)
+			//
+			// })
+			//创建按钮添加事件
+			$("#createDicValueBtn").on("click",function () {
+				window.location.href = "settings/dictionary/value/createDicValue.do"
+			})
+			//编辑按钮添加事件
+			$("#editDicValueBtn").on("click",function () {
+				//获取被选中信息的数量
+				var checkeds = $("#tBody input[type=checkbox]:checked")
+				if (checkeds.length!=1){
+					alert("请选中 1 条信息操作")
+					return;
+				}
+				var id = checkeds.val()
+				window.location.href = "settings/dictionary/value/editDicValue.do?id="+id
+			})
+
+			//删除按钮添加事件
+			$("#deleteDicValueBtn").on("click",function () {
+
+				//拿到被选中的框框
+				var deletes = $("#tBody input[type=checkbox]:checked")
+				if (deletes.length == 0) {
+					alert("还没选中哦")
+				}
+				//关心一下
+				if (confirm("确定删除吗")) {
+					//拿到被选中框的值  就是主键ID
+					var ids = "";
+					$.each(deletes,function (index,obj) {
+						// ids += "id="+$(obj).val()+"&";
+						ids += "id="+obj.value+"&";
+					});
+					ids = ids.substring(0,ids.length-1);
+
+					$.ajax({
+						url: "settings/dictionary/value/deleteDicValueBtn.do",
+						type: "post",
+						data: ids,
+						success: function (data) {
+							if (data.code == 1) {
+								alert("成功删除"+data.data+"条数据");
+								window.location.href = "settings/dictionary/value/index.do"
+							} else {
+								alert(data.message)
+							}
+						}
+					})
+				}
+			})
+		});
+
+		//查询全部字典值
+		function queryAllDicValueList() {
+			$.ajax({
+				url:"settings/dictionary/value/queryAllDicValueList.do",
+				type:"get",
+				success:function (data) {
+					var str = "";
+					$.each(data,function (index,list) {
+						str += "<tr class=\"active\">";
+						str += "<td><input type=\"checkbox\" value=\""+list.id+"\"/></td>";
+						str += "<td>"+(index+1)+"</td>";
+						str += "<td>"+list.value+"</td>";
+						str += "<td>"+list.text+"</td>";
+						str += "<td>"+list.orderNo+"</td>";
+						str += "<td>"+list.typeCode+"</td>";
+						str += "</tr>";
+					});
+					$("#tBody").html(str)
+				}
+			})
+		}
+	</script>
 </head>
 <body>
 
@@ -31,8 +119,8 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 	<div style="position: relative; left: 30px; top: 20px;">
 		<table class="table table-hover">
 			<thead>
-				<tr style="color: #B3B3B3;">
-					<td><input type="checkbox" /></td>
+				<tr style="color:cadetblue;">
+					<td><input type="checkbox" id="checkedAll" /></td>
 					<td>序号</td>
 					<td>字典值</td>
 					<td>文本</td>
@@ -84,6 +172,6 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 			</tbody>
 		</table>
 	</div>
-	
+
 </body>
 </html>

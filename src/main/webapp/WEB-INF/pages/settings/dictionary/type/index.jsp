@@ -11,7 +11,7 @@
 
 <script type="text/javascript" src="jquery/jquery-1.11.1-min.js"></script>
 <script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
-
+<script type="text/javascript" src="js/commons.js"></script>
 	<script type="text/javascript">
 		// $(document).ready(function(){
 		// 	alert("-------------")
@@ -25,20 +25,20 @@
 				window.location.href="settings/dictionary/type/createDicTypeBtn.do"
 			})
 
-			//全选全不选
-			$("#chkedAll").on("click",function () {
-				$("#tBody input[type = 'checkbox']").prop("checked",$("#chkedAll").prop("checked"))
-			})
-
-			//反选
-			$("#tBody").on("click","input[type = 'checkbox']",function () {
-				// if ($("#tBody input[type = 'checkbox']:checked").size() == $("#tBody input[type = 'checkbox']").size() ){
-				// 	$("#chkedAll").prop("checked",true)
-				// }else {
-				// 	$("#chkedAll").prop("checked",false)
-				// }
-				$("#chkedAll").prop("checked",$("#tBody input[type='checkbox']").size() == $("#tBody input[type='checkbox']:checked").length)
-			})
+			// //全选全不选
+			// $("#checkedAll").on("click",function () {
+			// 	$("#tBody input[type = 'checkbox']").prop("checked",$("#chkedAll").prop("checked"))
+			// })
+			//
+			// //反选
+			// $("#tBody").on("click","input[type = 'checkbox']",function () {
+			// 	// if ($("#tBody input[type = 'checkbox']:checked").size() == $("#tBody input[type = 'checkbox']").size() ){
+			// 	// 	$("#checkedAll").prop("checked",true)
+			// 	// }else {
+			// 	// 	$("#checkedAll").prop("checked",false)
+			// 	// }
+			// 	$("#checkedAll").prop("checked",$("#tBody input[type='checkbox']").size() == $("#tBody input[type='checkbox']:checked").length)
+			// })
 
 			//编辑按钮
 			$("#editDicTypeBtn").on("click",function () {
@@ -140,7 +140,7 @@
 		<table class="table table-hover">
 			<thead>
 				<tr style="color: #B3B3B3;">
-					<td><input type="checkbox" id="chkedAll"/></td>
+					<td><input type="checkbox" id="checkedAll"/></td>
 					<td>序号</td>
 					<td>编码</td>
 					<td>名称</td>

@@ -12,7 +12,7 @@
             //给"下载"按钮添加单击事件
             $("#fileDownLoad").click(function () {
                 //发送下载请求(只能是同步请求)
-                window.location.href = "workbench/activity/fileDownLoad.do";
+                window.location.href = "workbench/com.bjpowernode.crm.workbench.activity/fileDownLoad.do";
             });
         });
     </script>

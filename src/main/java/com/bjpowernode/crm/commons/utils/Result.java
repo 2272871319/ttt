@@ -32,4 +32,11 @@ public class Result extends HashMap<String,Object> {
         result.put(Constants.RETURN_MESSAGE, string);
         return result;
     }
+
+    public static Result success(Object object) {
+        Result result = new Result();
+        result.put(Constants.RETURN_CODE, Constants.RETURN_SUCCESS);
+        result.put(Constants.RETURN_DATA, object);
+        return result;
+    }
 }
