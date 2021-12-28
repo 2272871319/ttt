@@ -1,8 +1,10 @@
 package com.bjpowernode.crm.workbench.service;
 
+import com.bjpowernode.crm.commons.utils.PaginationVO;
 import com.bjpowernode.crm.workbench.domain.Activity;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * ClassName:ActivityService
@@ -13,10 +15,10 @@ import java.util.List;
 public interface ActivityService {
 
     /**
-     * 查看全部市场活动
+     * 多条件分页查询
      * @return
      */
-    List<Activity> selectAllActivityList();
+    PaginationVO<Activity> selectAllActivityList(Map<String, Object> paramMap);
 
     /**
      * 主键查单个用户

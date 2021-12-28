@@ -36,28 +36,79 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
             clearBtn:true,//是否显示清空按钮
         });
 
-		//查看市场活动表
-        queryAllActivityList();
+		//多条件分页查询
+        queryAllActivityList(1,4);
+		//查询按钮添加事件
+		$("#queryActivityBtn").on("click",function () {
+			queryAllActivityList(1,10);
+		});
 
+		//创建按钮添加事件
+		$("#createActivityBtn").on("click",function () {
+
+		})
 	});
 
-	//查看市场活动表
-	function queryAllActivityList() {
+	//多条件分页查询
+	function queryAllActivityList(pageNo,pageSize) {
+
+		//获取页面信息
+		var queryName = $.trim($("#query-name").val());
+		var queryOwner = $.trim($("#query-owner").val());
+		var queryStartDate = $.trim($("#query-startDate").val());
+		var queryEndDate = $.trim($("#query-endDate").val());
+
 		$.ajax({
 			url:"workbench/activity/queryAllActivityList.do",
 			type:"get",
+			data:{
+				activityName:queryName,
+				ownerName:queryOwner,
+				StartDate:queryStartDate,
+				endDate:queryEndDate,
+				pageNo:pageNo,
+				pageSize:pageSize
+			},
 			success:function (data) {
 				var str = "";
-				$.each(data,function (index,list) {
+
+				//显示数据
+				$.each(data.activityList,function (index,list) {
+
 					str += "<tr class=\"active\">";
-					str += "<td><input type=\"checkbox\"/></td>";
-					str += "<td><a style=\"text-decoration: none; cursor: pointer;\" onclick=\"window.location.href='workbench/activity/detail.do?id="+list.id+"';\">"+list.name+"</a></td>";
-					str += "<td>"+list.owner+"</td>";
-					str += "<td>"+list.startDate+"</td>";
-					str += "<td>"+list.endDate+"</td>";
-					str += "</tr>";
-				})
-				$("#tBody").html(str)
+				str += "<td><input type=\"checkbox\"/></td>";
+				str += "<td><a style=\"text-decoration: none; cursor: pointer;\" onclick=\"window.location.href='workbench/activity/detail.do?id="+list.id+"';\">"+list.name+"</a></td>";
+				str += "<td>"+list.owner+"</td>";
+				str += "<td>"+list.startDate+"</td>";
+				str += "<td>"+list.endDate+"</td>";
+				str += "</tr>";
+				});
+
+				$("#tBody").html(str);
+
+
+				//分页模型
+				$("#demo_pag1").bs_pagination({
+					currentPage:pageNo,//当前页
+
+					rowsPerPage:pageSize,//每页显示条数
+					totalRows:data.totalRows,//总条数
+					totalPages: data.totalPage,//总页数
+
+					visiblePageLinks:2,//显示的翻页卡片数
+
+					showGoToPage:true,//是否显示"跳转到第几页"
+					showRowsPerPage:true,//是否显示"每页显示条数"
+					showRowsInfo:true,//是否显示"记录的信息"
+
+					//每次切换页号都会自动触发此函数，函数能够返回切换之后的页号和每页显示条数
+					onChangePage: function(e,pageObj) { // returns page_num and rows_per_page after a link has clicked
+						// alert(pageObj.currentPage);
+						// alert(pageObj.rowsPerPage);
+						queryAllActivityList(pageObj.currentPage,pageObj.rowsPerPage);
+					}
+
+				});
 			}
 		})
 	}
@@ -276,6 +327,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 				  </div>
 
 				  <button id="queryActivityBtn" type="button" class="btn btn-default">查询</button>
+					<button type="reset" class="btn btn-default">清空</button>
 
 				</form>
 			</div>
@@ -295,7 +347,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 				<table class="table table-hover">
 					<thead>
 						<tr style="color: #B3B3B3;">
-							<td><input type="checkbox" id="chked_all"/></td>
+							<td><input type="checkbox" id="checkedAll"/></td>
 							<td>名称</td>
                             <td>所有者</td>
 							<td>开始日期</td>
@@ -322,40 +374,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
                 <!--创建容器-->
                 <div id="demo_pag1"></div>
 			</div>
-			<div style="height: 50px; position: relative;top: 30px;">
-				<div>
-					<button type="button" class="btn btn-default" style="cursor: default;">共<b id="totalRowsB">50</b>条记录</button>
-				</div>
-				<div class="btn-group" style="position: relative;top: -34px; left: 110px;">
-					<button type="button" class="btn btn-default" style="cursor: default;">显示</button>
-					<div class="btn-group">
-						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-							10
-							<span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu" role="menu">
-							<li><a href="#">20</a></li>
-							<li><a href="#">30</a></li>
-						</ul>
-					</div>
-					<button type="button" class="btn btn-default" style="cursor: default;">条/页</button>
-				</div>
-				<div style="position: relative;top: -88px; left: 285px;">
-					<nav>
-						<ul class="pagination">
-							<li class="disabled"><a href="#">首页</a></li>
-							<li class="disabled"><a href="#">上一页</a></li>
-							<li class="active"><a href="#">1</a></li>
-							<li><a href="#">2</a></li>
-							<li><a href="#">3</a></li>
-							<li><a href="#">4</a></li>
-							<li><a href="#">5</a></li>
-							<li><a href="#">下一页</a></li>
-							<li class="disabled"><a href="#">末页</a></li>
-						</ul>
-					</nav>
-				</div>
-			</div>
+
 
 		</div>
 

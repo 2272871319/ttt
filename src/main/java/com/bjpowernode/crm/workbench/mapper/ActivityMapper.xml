@@ -162,9 +162,52 @@
     where id = #{id,jdbcType=CHAR}
   </update>
 
-<!--  查看全部市场活动-->
-  <select id="selectAllActivityList" resultMap="BaseResultMap">
-    select <include refid="Base_Column_List"></include>
-    from tbl_activity
+<!--  多条件分页查询-->
+  <select id="selectAllActivityList" parameterType="map" resultMap="BaseResultMap">
+    select a.name,u.name as owner,start_date,end_date
+    from tbl_activity a
+           left join
+         tbl_user u
+         on a.owner=u.id
+
+    <where>
+      <if test="activityName != null and activityName != ''">
+          and a.name like concat ('%',${activityName},'%')
+      </if>
+      <if test="ownerName != null and ownerName != ''">
+         and u.name like '%' #{ownerName} '%'
+      </if>
+      <if test="StartDate != null and StartDate != ''">
+         and start_date &gt;= #{StartDate}
+      </if>
+      <if test="endDate != null and endDate != ''">
+         and end_date &lt;= #{endDate}
+      </if>
+    </where>
+         limit ${pageNo},${pageSize}
+  </select>
+
+<!--  查询返回数据总量-->
+  <select id="selectAllActivityCount" resultType="int">
+    select count(a.id)
+    from tbl_activity a
+    left join
+    tbl_user u
+    on a.owner=u.id
+
+    <where>
+      <if test="activityName != null and activityName != ''">
+        and a.name like concat ('%',${activityName},'%')
+      </if>
+      <if test="ownerName != null and ownerName != ''">
+        and u.name like '%' #{ownerName} '%'
+      </if>
+      <if test="StartDate != null and StartDate != ''">
+        and start_date <![CDATA[>= ]]> ${StartDate}
+      </if>
+      <if test="endDate != null and endDate != ''">
+        and end_date &lt;= ${endDate}
+      </if>
+    </where>
   </select>
 </mapper>
