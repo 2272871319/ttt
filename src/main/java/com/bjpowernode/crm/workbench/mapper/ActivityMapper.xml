@@ -164,7 +164,8 @@
 
 <!--  多条件分页查询-->
   <select id="selectAllActivityList" parameterType="map" resultMap="BaseResultMap">
-    select a.name,u.name as owner,start_date,end_date
+    select a.name,u.name as owner,start_date,end_date,
+           a.id, a.cost, a.description, a.create_time, a.create_by,a.edit_time, a.edit_by
     from tbl_activity a
            left join
          tbl_user u

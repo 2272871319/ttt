@@ -2,6 +2,7 @@ package com.bjpowernode.crm.settings.service;
 
 import com.bjpowernode.crm.settings.domain.User;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,4 +25,11 @@ public interface UserService {
      * @return
      */
     User selectLoginAct(String loginAct);
+
+    /**
+     * 查询全部所有者信息
+     * @return
+     */
+    List<User> selectUserList();
+
 }

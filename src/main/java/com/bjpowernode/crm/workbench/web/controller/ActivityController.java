@@ -1,6 +1,8 @@
 package com.bjpowernode.crm.workbench.web.controller;
 
 import com.bjpowernode.crm.commons.utils.PaginationVO;
+import com.bjpowernode.crm.settings.domain.User;
+import com.bjpowernode.crm.settings.service.UserService;
 import com.bjpowernode.crm.workbench.domain.Activity;
 import com.bjpowernode.crm.workbench.service.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,8 @@ public class ActivityController {
 
     @Autowired
     private ActivityService activityService;
+    @Autowired
+    private UserService userService;
 
     /**
      * 市场活动
@@ -78,6 +82,16 @@ public class ActivityController {
         return retMap;
     }
 
+    /**
+     * 创建页面返回所有者信息
+     * @return
+     */
+    @RequestMapping("workbench/activity/createActivityModal.do")
+    @ResponseBody
+    public Object createActivityModal(){
+        List<User> userList = userService.selectUserList();
+        return userList;
+    }
     /**
      * 用户详情跳转页面
      * @return

@@ -45,8 +45,22 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 
 		//创建按钮添加事件
 		$("#createActivityBtn").on("click",function () {
-
+			//打开创建页面
+			$("#createActivityModal").modal("show");
+			//显示页面数据-导入全部所有者信息
+			$.ajax({
+				url:"workbench/activity/createActivityModal.do",
+				type:"get",
+				success:function (list) {
+					var str = "<option value=\"\">----------请选择---------</option>";
+					$.each(list,function (index,u) {
+						str += "<option value="+u.id+">"+u.name+"</option>"
+					})
+					$("#create-marketActivityOwner").html(str);
+				}
+			})
 		})
+
 	});
 
 	//多条件分页查询

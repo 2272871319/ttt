@@ -199,4 +199,9 @@
     where
           login_act=#{loginAct}
   </select>
+<!--  查询全部信息-->
+  <select id="selectUserList" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"></include>
+    from tbl_user
+  </select>
 </mapper>
