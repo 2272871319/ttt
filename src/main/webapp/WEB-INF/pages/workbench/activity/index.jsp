@@ -40,7 +40,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
         queryAllActivityList(1,4);
 		//查询按钮添加事件
 		$("#queryActivityBtn").on("click",function () {
-			queryAllActivityList(1,10);
+			queryAllActivityList(1,$("#demo_pag1").bs_pagination("getOption","rowsPerPage"));
 		});
 
 		//创建按钮添加事件
@@ -59,6 +59,160 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 					$("#create-marketActivityOwner").html(str);
 				}
 			})
+		});
+
+		//创建中的保存按钮添加事件
+		$("#saveCreateActivityBtn").on("click",function () {
+			//获取三个必填框的值
+			var owner = $("#create-marketActivityOwner").val();
+			var name = $("#create-marketActivityName").val();
+			var cost = $("#create-cost").val();
+
+			if(owner == ''){
+				$("#ownerMsg").html("所有者不能为空");
+				return;
+			}
+
+			if(name == ""){
+				$("#nameMsg").html("名称不能为空");
+				return;
+			}
+
+			if(cost == ""){
+				$("#costMsg").html("成本不能为空");
+				return;
+			}else if(!/^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/.test(cost)){
+				$("#costMsg").html("成本书写不合法");
+				return;
+			}
+			//获取所有框的信息
+			var startDate = $("#create-startDate").val();
+			var endDate = $("#create-endDate").val();
+			var description = $("#create-description").val();
+			//发送请求保存数据
+			$.ajax({
+				url:"workbench/activity/saveCreateActivity.do",
+				type:"post",
+				data:{
+					owner:owner,
+					name:name,
+					cost:cost,
+					startDate:startDate,
+					endDate:endDate,
+					description:description
+				},
+				success:function (data) {
+					if (data.code==1){
+						$("#createActivityModal").modal("hide");
+						queryAllActivityList(1,$("#demo_pag1").bs_pagination("getOption","rowsPerPage"));
+					}else {
+						alert(data.message)
+					}
+				}
+			})
+
+		});
+
+		//编辑按钮添加事件
+		$("#editActivityBtn").on("click",function () {
+			var checkboxs = $("#tBody input[type='checkbox']:checked");
+			if(checkboxs.length !=1 ){
+				alert("请选择 1 条信息编辑");
+				return;
+			}
+			$("#editActivityModal").modal("show");
+
+			var id = checkboxs.val();
+			$.ajax({
+				url:"workbench/activity/editActivityModal.do?id="+id,
+				type:"get",
+				success:function (data) {
+					var str = "";
+					$.each(data.userList,function (index,obj) {
+						str += "<option value='"+obj.id+"'>"+obj.name+"</option>";
+					});
+					$("#edit-marketActivityOwner").html(str);
+
+					$("#edit-marketActivityOwner").val(data.activity.owner);
+					$("#edit-marketActivityName").val(data.activity.name);
+					$("#edit-startDate").val(data.activity.startDate);
+					$("#edit-endDate").val(data.activity.endDate);
+					$("#edit-cost").val(data.activity.cost);
+					$("#edit-description").val(data.activity.description);
+					$("#edit-id").val(data.activity.id);
+				}
+			})
+		});
+
+		//编辑中的更新按钮添加事件
+		$("#saveEditActivityBtn").on("click",function () {
+			//获取所有者和名称的值
+			var owner = $("#edit-marketActivityOwner").val();
+			var name = $("#edit-marketActivityName").val();
+
+			if (name == ''){
+				$("#markeMsg").html("名称不能为空")
+			}
+			//获取开始结束成本描述的内容
+			var startDate = $("#edit-startDate").val();
+			var endDate = $("#edit-endDate").val();
+			var cost = $("#edit-cost").val();
+			var description = $("#edit-description").val();
+			var id = $("#edit-id").val();
+
+			$.ajax({
+				url:"workbench/activity/saveEditActivity.do",
+				type:"post",
+				data:{
+					id:id,
+					owner:owner,
+					name:name ,
+					startDate:startDate,
+					endDate:endDate,
+					cost:cost,
+					description:description
+				},
+				success:function (data) {
+					if (data.code == 1){
+						$("#editActivityModal").modal("hide");
+						queryAllActivityList($("#demo_pag1").bs_pagination("getOption","currentPage"),$("#demo_pag1").bs_pagination("getOption","rowsPerPage"))
+					}else {
+						alert(data.message);
+					}
+				}
+			})
+		});
+
+		//删除按钮添加事件
+		$("#deleteActivityBtn").on("click",function () {
+			if (confirm("确定删除吗")){
+				//获取被选中的按钮对象
+				var checkboxs = $("#tBody input[type='checkbox']:checked");
+				if (checkboxs.length == 0){
+					alert("先选中再删除")
+					return;
+				}
+				//拼接字符串
+				var str = "";
+				$.each(checkboxs,function (index,ids) {
+					str+= "id="+ids.value+"&";
+				});
+				str = str.substring(0,str.length-1);
+				//发送请求批量删除
+				$.ajax({
+					url:"workbench/activity/deleteActivity.do",
+					type:"post",
+					data:str,
+					success:function (data) {
+						if (data.code == 1){
+							queryAllActivityList($("#demo_pag1").bs_pagination("getOption","currentPage"),$("#demo_pag1").bs_pagination("getOption","rowsPerPage"))
+							alert("成功删除"+data.data+"条数据");
+						}else {
+							alert(data.message)
+						}
+					}
+				})
+			}
 		})
 
 	});
@@ -66,6 +220,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 	//多条件分页查询
 	function queryAllActivityList(pageNo,pageSize) {
 
+		$("#checkedAll").prop("checked",false);
 		//获取页面信息
 		var queryName = $.trim($("#query-name").val());
 		var queryOwner = $.trim($("#query-owner").val());
@@ -90,7 +245,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 				$.each(data.activityList,function (index,list) {
 
 					str += "<tr class=\"active\">";
-				str += "<td><input type=\"checkbox\"/></td>";
+				str += "<td><input type=\"checkbox\" value='"+list.id+"'/></td>";
 				str += "<td><a style=\"text-decoration: none; cursor: pointer;\" onclick=\"window.location.href='workbench/activity/detail.do?id="+list.id+"';\">"+list.name+"</a></td>";
 				str += "<td>"+list.owner+"</td>";
 				str += "<td>"+list.startDate+"</td>";
@@ -149,14 +304,13 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 							<label for="create-marketActivityOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="create-marketActivityOwner">
-									<c:forEach items="${userList}" var="u">
-										<option value="${u.id}">${u.name}</option>
-									</c:forEach>
 								</select>
+								<span style="color: red" id="ownerMsg"></span>
 							</div>
                             <label for="create-marketActivityName" class="col-sm-2 control-label">名称<span style="font-size: 15px; color: red;">*</span></label>
                             <div class="col-sm-10" style="width: 300px;">
                                 <input type="text" class="form-control" id="create-marketActivityName">
+								<span style="color: red" id="nameMsg"></span>
                             </div>
 						</div>
 
@@ -172,9 +326,10 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 						</div>
                         <div class="form-group">
 
-                            <label for="create-cost" class="col-sm-2 control-label">成本</label>
+                            <label for="create-cost" class="col-sm-2 control-label">成本<span style="font-size: 15px; color: red;">*</span></label>
                             <div class="col-sm-10" style="width: 300px;">
                                 <input type="text" class="form-control" id="create-cost">
+								<span style="color: red" id="costMsg"></span>
                             </div>
                         </div>
 						<div class="form-group">
@@ -221,17 +376,18 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
                             <label for="edit-marketActivityName" class="col-sm-2 control-label">名称<span style="font-size: 15px; color: red;">*</span></label>
                             <div class="col-sm-10" style="width: 300px;">
                                 <input type="text" class="form-control" id="edit-marketActivityName" value="发传单">
+								<span style="color: red" id="markeMsg"></span>
                             </div>
 						</div>
 
 						<div class="form-group">
 							<label for="edit-startDate" class="col-sm-2 control-label">开始日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-startDate" value="2020-10-10">
+								<input type="text" class="form-control mydate" id="edit-startDate" value="2020-10-10" readonly>
 							</div>
 							<label for="edit-endDate" class="col-sm-2 control-label">结束日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-endDate" value="2020-10-20">
+								<input type="text" class="form-control mydate" id="edit-endDate" value="2020-10-20" readonly>
 							</div>
 						</div>
 
@@ -339,7 +495,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 					  <input class="form-control mydate" type="text" id="query-endDate" readonly>
 				    </div>
 				  </div>
-
+					<br>
 				  <button id="queryActivityBtn" type="button" class="btn btn-default">查询</button>
 					<button type="reset" class="btn btn-default">清空</button>
 
@@ -371,14 +527,14 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 					<tbody id="tBody">
 						<tr class="active">
 							<td><input type="checkbox" /></td>
-							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.jsp';">发传单</a></td>
+							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.jsp';">加载中</a></td>
                             <td>zhangsan</td>
 							<td>2020-10-10</td>
 							<td>2020-10-20</td>
 						</tr>
                         <tr class="active">
                             <td><input type="checkbox" /></td>
-                            <td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.jsp';">发传单</a></td>
+                            <td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.jsp';">加载中</a></td>
                             <td>zhangsan</td>
                             <td>2020-10-10</td>
                             <td>2020-10-20</td>

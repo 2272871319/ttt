@@ -39,8 +39,44 @@ public class ActivityServiceImpl implements ActivityService {
         return listPaginationVO;
     }
 
+    /**
+     * 市场活动页面新增
+     * @param activity
+     * @return
+     */
+    @Override
+    public int saveCreateActivity(Activity activity) {
+        return activityMapper.insertSelective(activity);
+    }
+
+    @Override
+    public Activity queryActivityKeyById(String id) {
+        return activityMapper.selectByPrimaryKey(id);
+    }
+
+    /**
+     * 用户详情跳转
+     * @param id
+     * @return
+     */
     @Override
     public Activity queryActivityKey(String id) {
-        return activityMapper.selectByPrimaryKey(id);
+        return activityMapper.selectAllPrimaryKey(id);
+    }
+
+    /**
+     * 修改市场活动 编辑页面更新功能
+     * @param activity
+     * @return
+     */
+    @Override
+    public int saveEditActivity(Activity activity) {
+        return activityMapper.updateByPrimaryKeySelective(activity);
+    }
+
+    //批量删除
+    @Override
+    public int deleteActivity(String[] id) {
+        return activityMapper.deleteActivity(id);
     }
 }

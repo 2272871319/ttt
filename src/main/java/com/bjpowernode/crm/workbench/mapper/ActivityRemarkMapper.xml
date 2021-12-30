@@ -15,7 +15,7 @@
     id, note_content, create_time, create_by, edit_time, edit_by, edit_flag, activity_id
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from tbl_activity_remark
     where id = #{id,jdbcType=CHAR}
@@ -25,11 +25,11 @@
     where id = #{id,jdbcType=CHAR}
   </delete>
   <insert id="insert" parameterType="com.bjpowernode.crm.workbench.domain.ActivityRemark">
-    insert into tbl_activity_remark (id, note_content, create_time, 
-      create_by, edit_time, edit_by, 
+    insert into tbl_activity_remark (id, note_content, create_time,
+      create_by, edit_time, edit_by,
       edit_flag, activity_id)
-    values (#{id,jdbcType=CHAR}, #{noteContent,jdbcType=VARCHAR}, #{createTime,jdbcType=CHAR}, 
-      #{createBy,jdbcType=VARCHAR}, #{editTime,jdbcType=CHAR}, #{editBy,jdbcType=VARCHAR}, 
+    values (#{id,jdbcType=CHAR}, #{noteContent,jdbcType=VARCHAR}, #{createTime,jdbcType=CHAR},
+      #{createBy,jdbcType=VARCHAR}, #{editTime,jdbcType=CHAR}, #{editBy,jdbcType=VARCHAR},
       #{editFlag,jdbcType=CHAR}, #{activityId,jdbcType=CHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.bjpowernode.crm.workbench.domain.ActivityRemark">
@@ -125,4 +125,18 @@
       activity_id = #{activityId,jdbcType=CHAR}
     where id = #{id,jdbcType=CHAR}
   </update>
+<!--  加载备注-->
+  <select id="queryActivityRemarkListByActivityId" resultMap="BaseResultMap">
+
+    select u.name as create_by,
+           r.id, note_content, r.create_time, r.edit_time, r.edit_by, edit_flag, activity_id
+    from
+      tbl_activity_remark r
+        left join
+      tbl_user u
+
+      on r.create_by = u.id
+    where activity_id = #{activityId}
+    order by create_time desc
+  </select>
 </mapper>

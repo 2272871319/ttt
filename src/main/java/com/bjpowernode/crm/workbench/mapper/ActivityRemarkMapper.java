@@ -2,6 +2,8 @@ package com.bjpowernode.crm.workbench.mapper;
 
 import com.bjpowernode.crm.workbench.domain.ActivityRemark;
 
+import java.util.List;
+
 public interface ActivityRemarkMapper {
     int deleteByPrimaryKey(String id);
 
@@ -14,4 +16,7 @@ public interface ActivityRemarkMapper {
     int updateByPrimaryKeySelective(ActivityRemark record);
 
     int updateByPrimaryKey(ActivityRemark record);
+
+    //加载备注
+    List<ActivityRemark> queryActivityRemarkListByActivityId(String activityId);
 }

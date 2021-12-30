@@ -16,7 +16,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 
 	//默认情况下取消和保存按钮是隐藏的
 	var cancelAndSaveBtnDefault = true;
-	
+
 	$(function(){
 		$("#remark").focus(function(){
 			if(cancelAndSaveBtnDefault){
@@ -47,13 +47,128 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
             $(this).children("span").css("color","#E6E6E6");
         });
 
+		//加载显示备注
+		queryActivityRemarkListByActivityId();
+
+		//备注下保存按钮添加事件
+		$("#saveCreateRemarkBtn").on("click",function () {
+			//获取备注内容和页面名称
+			var noteContent = $("#remark").val()
+			var activityId = "${activity.id}";
+
+			$.ajax({
+				url:"workbench/activity/saveCreateRemark.do",
+				type: "post",
+				data:{
+					noteContent:noteContent,
+					activityId:activityId
+				},
+				success:function (data) {
+					if (data.code == 1){
+						queryActivityRemarkListByActivityId();
+						$("#remark").val("");
+						$("#cancelBtn").click()
+					}else {
+						alert(data.message)
+					}
+				}
+			})
+		});
+
+
+		//编辑页面更新按钮添加事件
+		$("#updateRemarkBtn").on("click",function () {
+			//获取内容框的值
+			var noteContent = $("#edit-noteContent").val();
+			//拿到该条备注主键
+			var  id = $("#remarkId").val();
+
+			//发送请求修改备注
+			$.ajax({
+				url:"workbench/activity/updateRemark.do",
+				type:"post",
+				data:{
+					noteContent:noteContent,
+					id:id
+				},
+				success:function (data) {
+					if (data.code==1){
+						$("#editRemarkModal").modal("hide");
+						queryActivityRemarkListByActivityId();
+					}else {
+						alert(data.message)
+					}
+				}
+			})
+
+		})
 	});
-	
+
+	//加载显示备注
+	function queryActivityRemarkListByActivityId(){
+		//获取页面id
+		var activityId = "${activity.id}";
+		$.ajax({
+			url:"workbench/activity/queryActivityRemarkListByActivityId.do",
+			type:"get",
+			data:{
+				activityId:activityId
+			},
+			success:function (data) {
+				var activityName = "${activity.name}";
+				var str = "";
+				$.each(data,function (index,obj) {
+
+					str += "<div class='remarkDiv' style='height: 60px;'>";
+					str += "<img title='"+obj.createBy+"' src='image/user-thumbnail.png' style='width: 30px; height:30px;'>";
+					str += "<div style='position: relative; top: -40px; left: 40px;' >";
+					str += "<h5>"+obj.noteContent+"</h5>";
+					str += "<font color=\"gray\">市场活动</font> <font color=\"gray\">-</font> <b style='color: red'>"+activityName+"</b> <small color=\"red\"> "+obj.createTime+" 由 <b style='color: green'>"+obj.createBy+"</b> 创建</small>";
+					str += "<div style='position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;'>";
+					str += "<a class='myHref' href='javascript:void(0);' onclick=\"showDiv('"+obj.noteContent+"','"+obj.id+"')\"><span class='glyphicon glyphicon-edit' style='font-size: 20px; color: #E6E6E6;'></span></a>";
+					str += "&nbsp;&nbsp;&nbsp;&nbsp;";
+					str += "<a class='myHref' href='javascript:void(0);' onclick=\"deleteDiv('"+obj.id+"')\"><span class='glyphicon glyphicon-remove' style='font-size: 20px; color: #E6E6E6;'></span></a>";
+					str += "</div>";
+					str += "</div>";
+					str += "</div>";
+				});
+
+				$("#remarks").html(str)
+			}
+		})
+	}
+
+	//备注编辑界面
+	function showDiv(noteContent,id){
+		$("#editRemarkModal").modal("show");
+		//把该条备注的id赋值到备注框
+		$("#remarkId").val(id);
+		//反显备注
+		$("#edit-noteContent").val(noteContent);
+
+	}
+	//删除按钮
+	function deleteDiv(id) {
+		if (confirm("确定删除吗")){
+			$.ajax({
+				url:"workbench/activity/deleteDiv.do",
+				type:"post",
+				data:{id:id},
+				success:function (data) {
+					if (data.code == 1){
+						queryActivityRemarkListByActivityId();
+					}else {
+						alert(data.message)
+					}
+				}
+			})
+		}
+	}
 </script>
 
 </head>
 <body>
-	
+
 	<!-- 修改市场活动备注的模态窗口 -->
 	<div class="modal fade" id="editRemarkModal" role="dialog">
 		<%-- 备注的id --%>
@@ -85,21 +200,21 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
         </div>
     </div>
 
-    
+
 
 	<!-- 返回按钮 -->
 	<div style="position: relative; top: 35px; left: 10px;">
 		<a href="javascript:void(0);" onclick="window.history.back();"><span class="glyphicon glyphicon-arrow-left" style="font-size: 20px; color: #DDDDDD"></span></a>
 	</div>
-	
+
 	<!-- 大标题 -->
 	<div style="position: relative; left: 40px; top: -30px;">
 		<div class="page-header">
 			<h3>市场活动-${activity.name} <small>${activity.startDate} ~ ${activity.endDate}</small></h3>
 		</div>
-		
+
 	</div>
-	
+
 	<br/>
 	<br/>
 	<br/>
@@ -148,7 +263,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 			<div style="height: 1px; width: 850px; background: #D5D5D5; position: relative; top: -20px;"></div>
 		</div>
 	</div>
-	
+
 	<!-- 备注 -->
 	<div id="remarkDivList" style="position: relative; top: 30px; left: 40px;">
 		<div class="page-header">
@@ -161,7 +276,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 				<img title="zhangsan" src="image/user-thumbnail.png" style="width: 30px; height:30px;">
 				<div style="position: relative; top: -40px; left: 40px;" >
 					<h5>哎呦！</h5>
-					<font color="gray">市场活动</font> <font color="gray">-</font> <b>发传单</b> <small style="color: gray;"> 2017-01-22 10:10:10 由zhangsan</small>
+					<font color="gray">市场活动</font> <font color="gray">-</font> <b>${activity.name}</b> <small style="color: gray;"> 2017-01-22 10:10:10 由zhangsan</small>
 					<div style="position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;">
 						<a class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: #E6E6E6;"></span></a>
 						&nbsp;&nbsp;&nbsp;&nbsp;

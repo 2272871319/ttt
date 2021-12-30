@@ -30,4 +30,18 @@ public interface ActivityMapper {
      * @return
      */
     Integer selectAllActivityCount(Map<String, Object> paramMap);
+
+    /**
+     * 主键查询 用户详情页面跳转
+     * @param id
+     * @return
+     */
+    Activity selectAllPrimaryKey(String id);
+
+    /**
+     * 批量删除
+     * @param id
+     * @return
+     */
+    int deleteActivity(String[] id);
 }
