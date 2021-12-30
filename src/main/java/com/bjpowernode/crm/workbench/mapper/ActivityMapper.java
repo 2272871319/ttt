@@ -44,4 +44,15 @@ public interface ActivityMapper {
      * @return
      */
     int deleteActivity(String[] id);
+
+    /**
+     * 导出全部市场活动数据
+     * @return
+     */
+    List<Activity> exportAllActivityList();
+    /**
+     * 导出选中的市场活动数据
+     * @return
+     */
+    List<Activity> exportActivityXz(String[] id);
 }

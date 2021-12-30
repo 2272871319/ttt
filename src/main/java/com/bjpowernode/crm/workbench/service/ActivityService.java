@@ -53,4 +53,17 @@ public interface ActivityService {
      * @return
      */
     int deleteActivity(String[] id);
+
+    /**
+     * 导出全部市场活动数据
+     * @return
+     */
+    List<Activity> exportAllActivityList();
+
+    /**
+     * 根据id查询
+     * @param id
+     * @return
+     */
+    List<Activity> exportActivityXz(String[] id);
 }

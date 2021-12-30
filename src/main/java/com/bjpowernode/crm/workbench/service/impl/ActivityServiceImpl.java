@@ -79,4 +79,16 @@ public class ActivityServiceImpl implements ActivityService {
     public int deleteActivity(String[] id) {
         return activityMapper.deleteActivity(id);
     }
+    //导出全部市场活动数据
+
+    @Override
+    public List<Activity> exportAllActivityList() {
+        return activityMapper.exportAllActivityList();
+    }
+
+    //导出选中的市场活动数据
+    @Override
+    public List<Activity> exportActivityXz(String[] id) {
+        return activityMapper.exportActivityXz(id);
+    }
 }

@@ -239,4 +239,47 @@
   #{id}
 </foreach>
   </delete>
+
+<!--  导出全部市场活动数据-->
+  <select id="exportAllActivityList" resultMap="BaseResultMap">
+    select u.name as owner,u1.name as create_by,u2.name as edit_by,
+           a.id, a.name,a.cost, a.description, a.create_time, a.edit_time,a.start_date,a.end_date
+    from
+      tbl_activity a
+        left join
+      tbl_user u
+      on a.owner=u.id
+
+        left join
+      tbl_user u1
+      on a.create_by = u1.id
+
+        left join
+      tbl_user u2
+      on a.edit_by = u2.id
+  </select>
+
+<!--  导出选中的市场活动数据-->
+  <select id="exportActivityXz" resultMap="BaseResultMap">
+    select u.name as owner,u1.name as create_by,u2.name as edit_by,
+           a.id, a.name,a.cost, a.description, a.create_time, a.edit_time,a.start_date,a.end_date
+    from
+      tbl_activity a
+        left join
+      tbl_user u
+      on a.owner=u.id
+
+        left join
+      tbl_user u1
+      on a.create_by = u1.id
+
+        left join
+      tbl_user u2
+      on a.edit_by = u2.id
+
+    where a.id in
+        <foreach collection="array" open="(" close=")" separator="," item="id">
+          #{id}
+        </foreach>
+  </select>
 </mapper>

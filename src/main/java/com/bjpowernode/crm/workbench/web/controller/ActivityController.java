@@ -11,13 +11,20 @@ import com.bjpowernode.crm.workbench.domain.Activity;
 import com.bjpowernode.crm.workbench.domain.ActivityRemark;
 import com.bjpowernode.crm.workbench.service.ActivityRemarkService;
 import com.bjpowernode.crm.workbench.service.ActivityService;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -262,6 +269,11 @@ public class ActivityController {
         return Result.success();
     }
 
+    /**
+     * 备注删除按钮
+     * @param id
+     * @return
+     */
     @RequestMapping("workbench/activity/deleteDiv.do")
     @ResponseBody
     public Object deleteDiv(@RequestParam(value = "id",required = true) String id){
@@ -276,5 +288,183 @@ public class ActivityController {
             return Result.fail("删除失败了");
         }
         return Result.success();
+    }
+
+    /**
+     * 导出全部市场活动信息
+     */
+    @RequestMapping("workbench/activity/exportActivityAll.do")
+    public void exportActivityAll(HttpServletResponse response) throws Exception{
+        List<Activity> list = activityService.exportAllActivityList();
+        //创建工作簿
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        //创建工作册
+        HSSFSheet sheet = workbook.createSheet();
+        //创建第一行
+        HSSFRow row = sheet.createRow(0);
+        //创建第一行的第一列
+        HSSFCell cell = row.createCell(0);
+        //第一个表格框的内容
+        cell.setCellValue("主键ID");
+        //第一行的第二列
+        cell = row.createCell(1);
+        cell.setCellValue("所有者");
+        //第一行的第三列
+        cell = row.createCell(2);
+        cell.setCellValue("市场活动名称");
+        //第一行第四列
+        cell = row.createCell(3);
+        cell.setCellValue("活动开始时间");
+        //第一行第五列
+        cell = row.createCell(4);
+        cell.setCellValue("活动结束时间");
+        //第一行第六列
+        cell = row.createCell(5);
+        cell.setCellValue("成本");
+        //第一行第七列
+        cell = row.createCell(6);
+        cell.setCellValue("内容");
+        //第一行第八列
+        cell = row.createCell(7);
+        cell.setCellValue("创建时间");
+        //第一行第九列
+        cell = row.createCell(8);
+        cell.setCellValue("创建者");
+        //第一行第十列
+        cell = row.createCell(9);
+        cell.setCellValue("修改者");
+        //第一行第十一列
+        cell = row.createCell(10);
+        cell.setCellValue("修改时间");
+
+        //遍历集合对表头下面赋值
+        for (int i = 0; i < list.size(); i++) {
+            row = sheet.createRow(i + 1);
+            cell = row.createCell(0);
+            cell.setCellValue(list.get(i).getId());
+            cell = row.createCell(1);
+            cell.setCellValue(list.get(i).getOwner());
+            cell = row.createCell(2);
+            cell.setCellValue(list.get(i).getName());
+            cell = row.createCell(3);
+            cell.setCellValue(list.get(i).getStartDate());
+            cell = row.createCell(4);
+            cell.setCellValue(list.get(i).getEndDate());
+            cell = row.createCell(5);
+            cell.setCellValue(list.get(i).getCost());
+            cell = row.createCell(6);
+            cell.setCellValue(list.get(i).getDescription());
+            cell = row.createCell(7);
+            cell.setCellValue(list.get(i).getCreateTime());
+            cell = row.createCell(8);
+            cell.setCellValue(list.get(i).getCreateBy());
+            cell = row.createCell(9);
+            cell.setCellValue(list.get(i).getEditBy());
+            cell = row.createCell(10);
+            cell.setCellValue(list.get(i).getEditTime());
+        }
+
+        //设置中文下载名称
+        String fileName = URLEncoder.encode("市场活动详细列表", "UTF-8");
+        //设置响应类型
+        response.setContentType("application/octet-stream;charset=UTF-8");
+        //设置响应头，下载时以文件附件下载
+        response.setHeader("Content-Disposition", "attachment;filename="+fileName+".xls");
+        //输出流对象
+        ServletOutputStream os = response.getOutputStream();
+
+        workbook.write(os);
+        os.flush();
+        os.close();
+        workbook.close();
+    }
+
+    /**
+     * 选择导出市场活动信息
+     */
+    @RequestMapping("workbench/activity/exportActivityXz.do")
+    public void exportActivityXz(HttpServletResponse response,String[] id) throws Exception{
+        List<Activity> list = activityService.exportActivityXz(id);
+        //创建工作簿
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        //创建工作册
+        HSSFSheet sheet = workbook.createSheet();
+        //创建第一行
+        HSSFRow row = sheet.createRow(0);
+        //创建第一行的第一列
+        HSSFCell cell = row.createCell(0);
+        //第一个表格框的内容
+        cell.setCellValue("主键ID");
+        //第一行的第二列
+        cell = row.createCell(1);
+        cell.setCellValue("所有者");
+        //第一行的第三列
+        cell = row.createCell(2);
+        cell.setCellValue("市场活动名称");
+        //第一行第四列
+        cell = row.createCell(3);
+        cell.setCellValue("活动开始时间");
+        //第一行第五列
+        cell = row.createCell(4);
+        cell.setCellValue("活动结束时间");
+        //第一行第六列
+        cell = row.createCell(5);
+        cell.setCellValue("成本");
+        //第一行第七列
+        cell = row.createCell(6);
+        cell.setCellValue("内容");
+        //第一行第八列
+        cell = row.createCell(7);
+        cell.setCellValue("创建时间");
+        //第一行第九列
+        cell = row.createCell(8);
+        cell.setCellValue("创建者");
+        //第一行第十列
+        cell = row.createCell(9);
+        cell.setCellValue("修改者");
+        //第一行第十一列
+        cell = row.createCell(10);
+        cell.setCellValue("修改时间");
+
+        //遍历集合对表头下面赋值
+        for (int i = 0; i < list.size(); i++) {
+            row = sheet.createRow(i + 1);
+            cell = row.createCell(0);
+            cell.setCellValue(list.get(i).getId());
+            cell = row.createCell(1);
+            cell.setCellValue(list.get(i).getOwner());
+            cell = row.createCell(2);
+            cell.setCellValue(list.get(i).getName());
+            cell = row.createCell(3);
+            cell.setCellValue(list.get(i).getStartDate());
+            cell = row.createCell(4);
+            cell.setCellValue(list.get(i).getEndDate());
+            cell = row.createCell(5);
+            cell.setCellValue(list.get(i).getCost());
+            cell = row.createCell(6);
+            cell.setCellValue(list.get(i).getDescription());
+            cell = row.createCell(7);
+            cell.setCellValue(list.get(i).getCreateTime());
+            cell = row.createCell(8);
+            cell.setCellValue(list.get(i).getCreateBy());
+            cell = row.createCell(9);
+            cell.setCellValue(list.get(i).getEditBy());
+            cell = row.createCell(10);
+            cell.setCellValue(list.get(i).getEditTime());
+        }
+
+        //设置中文下载名称
+        String fileName = URLEncoder.encode("市场活动详细列表", "UTF-8");
+        //设置响应类型
+        response.setContentType("application/octet-stream;charset=UTF-8");
+        //设置响应头，下载时以文件附件下载
+        response.setHeader("Content-Disposition", "attachment;filename="+fileName+".xls");
+        //输出流对象
+        ServletOutputStream os = response.getOutputStream();
+
+        workbook.write(os);
+        os.flush();
+        os.close();
+        workbook.close();
     }
 }

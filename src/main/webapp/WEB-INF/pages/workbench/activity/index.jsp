@@ -185,13 +185,15 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 
 		//删除按钮添加事件
 		$("#deleteActivityBtn").on("click",function () {
-			if (confirm("确定删除吗")){
+
 				//获取被选中的按钮对象
 				var checkboxs = $("#tBody input[type='checkbox']:checked");
 				if (checkboxs.length == 0){
 					alert("先选中再删除")
 					return;
 				}
+
+			if (confirm("确定删除吗")){
 				//拼接字符串
 				var str = "";
 				$.each(checkboxs,function (index,ids) {
@@ -213,6 +215,28 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 					}
 				})
 			}
+		})
+
+		//全部导出按钮添加事件
+		$("#exportActivityAllBtn").on("click",function () {
+			window.location.href = "workbench/activity/exportActivityAll.do";
+		})
+		//选择导出按钮添加shijian
+		$("#exportActivityXzBtn").on("click",function () {
+
+			var checkboxs = $("#tBody input[type='checkbox']:checked");
+
+			if (checkboxs.length == 0){
+				alert("还没选中哦");
+				return;
+			}
+
+			var str = "";
+			$.each(checkboxs,function (index,id) {
+				str += "id="+id.value+"&";
+			});
+			str = str.substring(0,str.length-1);
+			window.location.href = "workbench/activity/exportActivityXz.do?"+str;
 		})
 
 	});
@@ -509,7 +533,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 				</div>
 				<div class="btn-group" style="position: relative; top: 18%;">
                     <button id="importActivityListBtn" type="button" class="btn btn-default" ><span class="glyphicon glyphicon-import"></span> 上传列表数据（导入）</button>
-                    <button id="exportActivityAllBtn" type="button" class="btn btn-default"><span class="glyphicon glyphicon-export"></span> 下载列表数据（批量导出）</button>
+                    <button id="exportActivityAllBtn" type="button" class="btn btn-default"><span class="glyphicon glyphicon-export"></span> 下载列表数据（全部导出）</button>
                     <button id="exportActivityXzBtn" type="button" class="btn btn-default"><span class="glyphicon glyphicon-export"></span> 下载列表数据（选择导出）</button>
                 </div>
 			</div>
