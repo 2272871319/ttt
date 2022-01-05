@@ -24,12 +24,12 @@
     <result column="address" jdbcType="VARCHAR" property="address" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, full_name, appellation, owner, company, job, email, phone, website, mphone, state, 
-    source, create_by, create_time, edit_by, edit_time, description, contact_summary, 
+    id, full_name, appellation, owner, company, job, email, phone, website, mphone, state,
+    source, create_by, create_time, edit_by, edit_time, description, contact_summary,
     next_contact_time, address
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from tbl_clue
     where id = #{id,jdbcType=CHAR}
@@ -39,19 +39,19 @@
     where id = #{id,jdbcType=CHAR}
   </delete>
   <insert id="insert" parameterType="com.bjpowernode.crm.workbench.domain.Clue">
-    insert into tbl_clue (id, full_name, appellation, 
-      owner, company, job, email, 
-      phone, website, mphone, 
-      state, source, create_by, 
-      create_time, edit_by, edit_time, 
-      description, contact_summary, next_contact_time, 
+    insert into tbl_clue (id, full_name, appellation,
+      owner, company, job, email,
+      phone, website, mphone,
+      state, source, create_by,
+      create_time, edit_by, edit_time,
+      description, contact_summary, next_contact_time,
       address)
-    values (#{id,jdbcType=CHAR}, #{fullName,jdbcType=VARCHAR}, #{appellation,jdbcType=VARCHAR}, 
-      #{owner,jdbcType=CHAR}, #{company,jdbcType=VARCHAR}, #{job,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
-      #{phone,jdbcType=VARCHAR}, #{website,jdbcType=VARCHAR}, #{mphone,jdbcType=VARCHAR}, 
-      #{state,jdbcType=VARCHAR}, #{source,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, 
-      #{createTime,jdbcType=CHAR}, #{editBy,jdbcType=VARCHAR}, #{editTime,jdbcType=CHAR}, 
-      #{description,jdbcType=VARCHAR}, #{contactSummary,jdbcType=VARCHAR}, #{nextContactTime,jdbcType=CHAR}, 
+    values (#{id,jdbcType=CHAR}, #{fullName,jdbcType=VARCHAR}, #{appellation,jdbcType=VARCHAR},
+      #{owner,jdbcType=CHAR}, #{company,jdbcType=VARCHAR}, #{job,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR},
+      #{phone,jdbcType=VARCHAR}, #{website,jdbcType=VARCHAR}, #{mphone,jdbcType=VARCHAR},
+      #{state,jdbcType=VARCHAR}, #{source,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR},
+      #{createTime,jdbcType=CHAR}, #{editBy,jdbcType=VARCHAR}, #{editTime,jdbcType=CHAR},
+      #{description,jdbcType=VARCHAR}, #{contactSummary,jdbcType=VARCHAR}, #{nextContactTime,jdbcType=CHAR},
       #{address,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.bjpowernode.crm.workbench.domain.Clue">
@@ -267,4 +267,103 @@
       address = #{address,jdbcType=VARCHAR}
     where id = #{id,jdbcType=CHAR}
   </update>
+<!--  多条件分页查询-->
+  <select id="queryAllByTermClueList" parameterType="map" resultMap="BaseResultMap">
+
+    select v.value as appellation,v1.value as source,v2.value as state,u.name as owner,u1.name as create_by,
+    c.id, c.full_name, c.company, job, c.email, c.phone, c.website, c.mphone,
+      c.create_time, c.edit_by, c.edit_time, c.description, c.contact_summary,
+    c.next_contact_time, c.address
+    from
+    tbl_clue c
+    left join
+    tbl_dic_value v
+    on c.appellation = v.id
+    left join
+    tbl_dic_value v1
+    on c.source = v1.id
+    left join
+    tbl_dic_value v2
+    on c.state = v2.id
+    left join
+    tbl_user u
+    on c.owner = u.id
+    left join
+    tbl_user u1
+    on c.create_by = u1.id
+
+  <where>
+    <if test="fullName != null and fullName !=''">
+      and c.full_name like '%' #{fullName} '%'
+    </if>
+    <if test="company != null and company != ''">
+      and c.company like '%' #{company} '%'
+    </if>
+    <if test="phone != null ">
+      and c.phone like '%' #{phone} '%'
+    </if>
+    <if test="source != null">
+      and c.source like '%' #{source} '%'
+    </if>
+    <if test="owner != null and owner != ''">
+      and u.name like concat ('%',#{owner},'%')
+    </if>
+    <if test="mphone != null">
+      and c.mphone like concat ('%',#{mphone},'%')
+    </if>
+    <if test="state != null">
+      and c.state like concat ('%',#{state},'%')
+    </if>
+  </where>
+    order by  c.create_time desc
+limit #{pageNo},#{pageSize}
+  </select>
+
+<!--  查询总条数-->
+  <select id="queryCountClue" resultType="java.lang.Integer">
+
+    select count(c.id)
+    from
+    tbl_clue c
+    left join
+    tbl_dic_value v
+    on c.appellation = v.id
+    left join
+    tbl_dic_value v1
+    on c.source = v1.id
+    left join
+    tbl_dic_value v2
+    on c.state = v2.id
+    left join
+    tbl_user u
+    on c.owner = u.id
+    left join
+    tbl_user u1
+    on c.create_by = u1.id
+
+    <where>
+      <if test="fullName != null and fullName !=''">
+        and c.full_name like '%' #{fullName} '%'
+      </if>
+      <if test="company != null and company != ''">
+        and c.company like '%' #{company} '%'
+      </if>
+      <if test="phone != null ">
+        and c.phone like '%' #{phone} '%'
+      </if>
+      <if test="source != null">
+        and c.source like '%' #{source} '%'
+      </if>
+      <if test="owner != null and owner != ''">
+        and u.name like concat ('%',#{owner},'%')
+      </if>
+      <if test="mphone != null">
+        and c.mphone like concat ('%',#{mphone},'%')
+      </if>
+      <if test="state != null">
+        and c.state like concat ('%',#{state},'%')
+      </if>
+    </where>
+
+  </select>
 </mapper>

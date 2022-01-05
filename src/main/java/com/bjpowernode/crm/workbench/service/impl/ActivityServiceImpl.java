@@ -91,4 +91,9 @@ public class ActivityServiceImpl implements ActivityService {
     public List<Activity> exportActivityXz(String[] id) {
         return activityMapper.exportActivityXz(id);
     }
+    //批量导入
+    @Override
+    public int saveImportActivityList(List<Activity> activityList) {
+        return activityMapper.saveImportActivityList(activityList);
+    }
 }

@@ -28,15 +28,6 @@ public class WorkBenchController {
 
 
     /**
-     * 线索
-     * @return
-     */
-    @RequestMapping("workbench/clue/index.do")
-    public String clue(){
-        return "workbench/clue/index";
-    }
-
-    /**
      * 交易
      * @return
      */

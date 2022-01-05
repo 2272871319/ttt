@@ -30,4 +30,10 @@ public interface DicValueMapper {
      */
     int deleteDicValueBtn(String[] id);
 
+    /**
+     * 查询线索来源和线索状态
+     * @param typeCode
+     * @return
+     */
+    List<DicValue> selectBySourceAndState(String typeCode);
 }

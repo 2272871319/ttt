@@ -55,4 +55,11 @@ public interface ActivityMapper {
      * @return
      */
     List<Activity> exportActivityXz(String[] id);
+
+    /**
+     * 批量导入
+     * @param activityList
+     * @return
+     */
+    int saveImportActivityList(List<Activity> activityList);
 }

@@ -103,4 +103,11 @@
           #{id}
         </foreach>
   </delete>
+
+  <!--  查询线索来源和线索状态-->
+  <select id="selectBySourceAndState" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"></include>
+    from tbl_dic_value
+    where type_code = #{typeCode}
+  </select>
 </mapper>

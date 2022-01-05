@@ -20,10 +20,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.*;
 
@@ -466,5 +468,84 @@ public class ActivityController {
         os.flush();
         os.close();
         workbook.close();
+    }
+
+    @RequestMapping("workbench/activity/importActivityList.do")
+    @ResponseBody
+    public Object importActivityList(HttpServletRequest request, MultipartFile activityFile){
+        User user = (User) request.getSession().getAttribute(Constants.SESSION_USER);
+        int count = 0;
+        try {
+            //从Excel中读取数据
+            //创建工作簿
+            HSSFWorkbook wb = new HSSFWorkbook(activityFile.getInputStream());
+            //从工作簿获得工作册
+            HSSFSheet sheetAt = wb.getSheetAt(0);
+            //数据总行数
+            int lastRowNum = sheetAt.getLastRowNum();
+
+            //获取行对象
+            HSSFRow row = null;
+            HSSFCell cell = null;
+
+            List<Activity> activityList = new ArrayList<>();
+            Activity activity = null;
+            for (int i = 1; i <= lastRowNum; i++) {
+                activity = new Activity();
+                //完善市场活动信息
+                activity.setId(UUIDUtils.getUUID());
+                activity.setCreateTime(DateUtils.formatDateTime(new Date()));
+                activity.setCreateBy(user.getId());
+
+                //第i行数据
+                row = sheetAt.getRow(i);
+                //第i行第1个单元格
+                cell = row.getCell(0);
+                String activityName = cell.getStringCellValue();
+                activity.setName(activityName);
+
+                //第i行第2个单元格
+                cell = row.getCell(1);
+                String startDate = cell.getStringCellValue();
+                activity.setStartDate(startDate);
+
+                //第i行第3个单元格
+                cell = row.getCell(2);
+                String endDate = cell.getStringCellValue();
+                activity.setEndDate(endDate);
+
+                //第i行第4个单元格
+                cell = row.getCell(3);
+                String cost = cell.getStringCellValue();
+                activity.setCost(cost);
+
+                //第i行第5个单元格
+                cell = row.getCell(4);
+                String description = cell.getStringCellValue();
+                activity.setDescription(description);
+
+                //第i行第6个单元格
+                cell = row.getCell(4);
+                String createTime = cell.getStringCellValue();
+                activity.setCreateTime(createTime);
+
+                //第i行第7个单元格
+                cell = row.getCell(4);
+                String editTime = cell.getStringCellValue();
+                activity.setEditTime(editTime);
+
+                activityList.add(activity);
+            }
+
+            //批量导入
+            count = activityService.saveImportActivityList(activityList);
+            if (count != activityList.size()){
+                return Result.fail("批量导入失败");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Result.fail("批量导入失败了");
+        }
+        return Result.success(count);
     }
 }

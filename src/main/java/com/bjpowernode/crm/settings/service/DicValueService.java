@@ -43,4 +43,11 @@ public interface DicValueService {
      * @return
      */
     int deleteDicValueBtn(String[] id);
+
+    /**
+     * 页面导入查询下拉框 线索来源和线索状态
+     * @param typeCode
+     * @return
+     */
+    List<DicValue> queryAllDicValueSourceAndState(String typeCode);
 }

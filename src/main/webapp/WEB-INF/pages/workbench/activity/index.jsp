@@ -37,7 +37,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
         });
 
 		//多条件分页查询
-        queryAllActivityList(1,4);
+        queryAllActivityList(1,10);
 		//查询按钮添加事件
 		$("#queryActivityBtn").on("click",function () {
 			queryAllActivityList(1,$("#demo_pag1").bs_pagination("getOption","rowsPerPage"));
@@ -215,7 +215,54 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 					}
 				})
 			}
-		})
+		});
+		//上传列表数据按钮添加事件
+		$("#importActivityListBtn").on("click",function () {
+			$("#importActivityModal").modal("show")
+		});
+		//导入按钮添加事件
+		$("#importActivityBtn").on("click",function () {
+			//导入文件的全名
+			var activityFile = $("#activityFile").val().toString();
+			//拿到后缀
+			var suffix = activityFile.substring(activityFile.lastIndexOf(".")+1).toLowerCase()
+			//判断文件是否为excel
+			if (suffix != "xls"){
+				alert("操作仅针对Excel，仅支持后缀名为XLS的文件。");
+				return;
+			}
+			//获取文件控件对象
+			var fileSize = $("#activityFile")[0].files[0].size;
+			//文件对象
+			var file = $("#activityFile")[0].files[0];
+
+			//验证文件大小
+			if (fileSize > (1024*1024*5)){
+				alert("文件不超过5M");
+				return;
+			}
+			//js中创建一个表单对象
+			var form = new FormData();
+			form.append("activityFile",file);
+
+			//发送请求保存数据
+			$.ajax({
+				url:"workbench/activity/importActivityList.do",
+				type:"post",
+				data:form,
+				processData:false,//默认为true，会将数据按文本拼接为字符串
+				contentType:false,//默认为true，上传为文本，FALSE为二进制
+				success:function (data) {
+					if (data.code == 1){
+						alert("成功导入"+data.data+"条")
+						$("#importActivityModal").modal("hide")
+						queryAllActivityList(1,$("#demo_pag1").bs_pagination("getOption","rowsPerPage"));
+					}else {
+						alert(data.message)
+					}
+				}
+			});
+		});
 
 		//全部导出按钮添加事件
 		$("#exportActivityAllBtn").on("click",function () {
