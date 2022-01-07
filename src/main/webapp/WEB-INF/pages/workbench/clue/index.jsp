@@ -228,6 +228,104 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 					// }
 				}
 			})
+		});
+		//修改中的更新按钮
+		$("#saveUpdateClueBtn").on("click",function () {
+
+			//拿到三个必选框的值
+			var owner = $("#edit-clueOwner").val();
+			var company = $("#edit-company").val();
+			var fullName = $("#edit-surname").val();
+			//判断两个必选框是否为空
+			if (company == ''){
+				$("#companyMag").html("公司不得为空");
+				return;
+			}else {
+				$("#companyMag").html("");
+			}
+			if (fullName == ''){
+				$("#fullNameMag").html("姓名不得为空");
+				return;
+			}else {
+				$("#fullNameMag").html("");
+			};
+			var id = $("#edit-id").val();
+			var appellation = $("#edit-call").val();
+			var job = $("#edit-job").val();
+			var email = $("#edit-email").val();
+			var website = $("#edit-website").val();
+			var phone = $("#edit-phone").val();
+			var mphone = $("#edit-mphone").val();
+			var state = $("#edit-status").val();
+			var source = $("#edit-source").val();
+			var description = $("#edit-describe").val();
+			var contactSummary = $("#edit-contactSummary").val();
+			var nextContactTime = $("#edit-nextContactTime").val();
+			var address = $("#edit-address").val();
+
+			//发送请求保存数据
+			$.ajax({
+				url:"workbench/clue/saveUpdateClue.do",
+				type:"post",
+				data:{
+					id:id,
+					owner:owner,
+					company:company,
+					fullName:fullName,
+					appellation:appellation,
+					job:job,
+					email:email,
+					website:website,
+					phone:phone,
+					mphone:mphone,
+					state:state,
+					source:source,
+					description:description,
+					contactSummary:contactSummary,
+					nextContactTime:nextContactTime,
+					address:address
+				},
+				success:function (data) {
+					if (data.code == 1){
+						alert("更新成功")
+						$("#editClueModal").modal("hide");
+						queryAllByTermClueList($("#demo_pag1").bs_pagination("getOption","currentPage"),$("#demo_pag1").bs_pagination("getOption","rowsPerPage"));
+					}else {
+						alert(data.message)
+					}
+				}
+			})
+		});
+
+		//删除按钮添加事件
+		$("#deleteBtn").on("click",function () {
+			//拿到所有被选框
+			var checkboxs = $("#tBody input[type=checkbox]:checked");
+			if (checkboxs.length == 0){
+				alert("至少删除一条");
+				return;
+			}
+			if (confirm("确定要删除吗")){
+				var idsStr = "";
+				$.each(checkboxs,function (index,obj) {
+					idsStr += "id="+obj.value+"&";
+				})
+				idsStr = idsStr.substring(0,idsStr.length-1);
+
+				$.ajax({
+					url:"workbench/clue/deleteAll.do",
+					type:"post",
+					data: idsStr,
+					success:function (data) {
+						if (data.code == 1 ){
+							alert("成功删除"+data.data+"条数据");
+							queryAllByTermClueList(1,$("#demo_pag1").bs_pagination("getOption","rowsPerPage"));
+						}else {
+							alert(data.message)
+						}
+					}
+				})
+			}
 		})
 
 	});
@@ -580,7 +678,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 							<div class="form-group">
 								<label for="edit-nextContactTime" class="col-sm-2 control-label">下次联系时间</label>
 								<div class="col-sm-10" style="width: 300px;">
-									<input type="text" class="form-control" id="edit-nextContactTime" value="2017-05-01">
+									<input type="text" class="form-control mydate" id="edit-nextContactTime" value="2017-05-01" readonly>
 								</div>
 							</div>
 						</div>
@@ -600,7 +698,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal">更新</button>
+					<button type="button" class="btn btn-primary" id="saveUpdateClueBtn">更新</button>
 				</div>
 			</div>
 		</div>
@@ -696,7 +794,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 				<div class="btn-group" style="position: relative; top: 18%;">
 				  <button type="button" class="btn btn-primary" data-toggle="modal" id="createClueBtn"><span class="glyphicon glyphicon-plus"></span> 创建</button>
 				  <button type="button" class="btn btn-default" data-toggle="modal" id="editClueBtn"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
-				  <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> 删除</button>
+				  <button type="button" class="btn btn-danger" id="deleteBtn"><span class="glyphicon glyphicon-minus"></span> 删除</button>
 				</div>
 
 
@@ -746,40 +844,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 
 			</div>
 
-			<div style="height: 50px; position: relative;top: 60px;">
-				<div>
-					<button type="button" class="btn btn-default" style="cursor: default;">共<b>50</b>条记录</button>
-				</div>
-				<div class="btn-group" style="position: relative;top: -34px; left: 110px;">
-					<button type="button" class="btn btn-default" style="cursor: default;">显示</button>
-					<div class="btn-group">
-						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-							10
-							<span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu" role="menu">
-							<li><a href="#">20</a></li>
-							<li><a href="#">30</a></li>
-						</ul>
-					</div>
-					<button type="button" class="btn btn-default" style="cursor: default;">条/页</button>
-				</div>
-				<div style="position: relative;top: -88px; left: 285px;">
-					<nav>
-						<ul class="pagination">
-							<li class="disabled"><a href="#">首页</a></li>
-							<li class="disabled"><a href="#">上一页</a></li>
-							<li class="active"><a href="#">1</a></li>
-							<li><a href="#">2</a></li>
-							<li><a href="#">3</a></li>
-							<li><a href="#">4</a></li>
-							<li><a href="#">5</a></li>
-							<li><a href="#">下一页</a></li>
-							<li class="disabled"><a href="#">末页</a></li>
-						</ul>
-					</nav>
-				</div>
-			</div>
+
 
 		</div>
 

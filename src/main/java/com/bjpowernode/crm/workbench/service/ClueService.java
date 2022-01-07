@@ -33,4 +33,21 @@ public interface ClueService {
      * @return
      */
     Clue editClue(String id);
+
+    /**
+     * 批量删除
+     * @param id
+     * @return
+     */
+    int deleteAll(String[] id);
+
+    /**
+     * 更新保存
+     * @param clue
+     * @return
+     */
+    int saveUpdateClue(Clue clue);
+
+    Clue detailClue(String id);
+
 }

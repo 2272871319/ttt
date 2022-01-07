@@ -96,4 +96,21 @@ public class ActivityServiceImpl implements ActivityService {
     public int saveImportActivityList(List<Activity> activityList) {
         return activityMapper.saveImportActivityList(activityList);
     }
+
+    @Override
+    public List<Activity> queryAllClueActivityRelation(String id) {
+        return activityMapper.queryAllClueActivityRelation(id);
+    }
+
+    //关联市场活动查看列表
+    @Override
+    public List<Activity> exportShowConvert(Map<String,Object> map) {
+        return activityMapper.exportShowConvert(map);
+    }
+
+    //线索转化页面，搜索市场活动的单选框
+    @Override
+    public List<Activity> convertShowConvert(Map<String, Object> map) {
+        return activityMapper.convertShowConvert(map);
+    }
 }

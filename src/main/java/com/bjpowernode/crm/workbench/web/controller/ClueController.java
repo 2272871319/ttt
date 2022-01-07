@@ -9,8 +9,8 @@ import com.bjpowernode.crm.settings.domain.DicValue;
 import com.bjpowernode.crm.settings.domain.User;
 import com.bjpowernode.crm.settings.service.DicValueService;
 import com.bjpowernode.crm.settings.service.UserService;
-import com.bjpowernode.crm.workbench.domain.Clue;
-import com.bjpowernode.crm.workbench.service.ClueService;
+import com.bjpowernode.crm.workbench.domain.*;
+import com.bjpowernode.crm.workbench.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +35,17 @@ public class ClueController {
     private DicValueService dicValueService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ClueRemarkService clueRemarkService;
+    @Autowired
+    private ActivityService activityService;
+    @Autowired
+    private ClueActivityRelationService clueActivityRelationService;
+
+    @Autowired
+    private TranService tranService;
+    @Autowired
+    private ContactsService contactsService;
     /**
      * 线索
      * @return
@@ -44,13 +55,6 @@ public class ClueController {
         return "workbench/clue/index";
     }
 
-    /**
-     *   称呼超链接页面跳转
-     */
-    @RequestMapping("workbench/clue/detailClue.do")
-    public String detailClue(){
-        return "workbench/clue/detail";
-    }
 
     /**
      * 页面导入查询下拉框 线索来源和线索状态
@@ -184,5 +188,301 @@ public class ClueController {
         map.put("clue", clue);
 
         return map;
+    }
+
+    /**
+     * 保存更新
+     * @return
+     */
+    @RequestMapping("workbench/clue/saveUpdateClue.do")
+    @ResponseBody
+    public Object saveUpdateClue(HttpServletRequest request,Clue clue){
+        User user = (User) request.getSession().getAttribute(Constants.SESSION_USER);
+
+        try {
+            clue.setEditBy(user.getId());
+            clue.setEditTime(DateUtils.formatDateTime(new Date()));
+
+            int count = clueService.saveUpdateClue(clue);
+            if (count != 1){
+                return Result.fail("更新失败");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail("更新失败了");
+        }
+        return Result.success();
+    }
+
+    /**
+     * 批量删除
+     * @param id
+     * @return
+     */
+    @RequestMapping("workbench/clue/deleteAll.do")
+    @ResponseBody
+    public Object deleteAll(String[] id){
+        int count=0;
+        try {
+            count = clueService.deleteAll(id);
+            if (count == 0){
+                return Result.fail("删除失败");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail("删除失败了");
+        }
+        return Result.success(count);
+    }
+
+    /**
+     *   称呼超链接页面跳转
+     */
+    @RequestMapping("workbench/clue/detailClue.do")
+    public String detailClue(HttpServletRequest request,String id){
+        Clue clue = clueService.detailClue(id);
+        request.setAttribute("clue", clue);
+        return "workbench/clue/detail";
+    }
+
+    /**
+     * 查询备注列表
+     * @param id
+     * @return
+     */
+    @RequestMapping("workbench/clue/detail/queryAllClueRemarkById.do")
+    @ResponseBody
+    public Object queryAllClueRemarkById(@RequestParam(value = "id",required = true) String id){
+        List<ClueRemark> clueRemarks = clueRemarkService.queryAllClueRemarkById(id);
+        return clueRemarks;
+    }
+
+    /**
+     * 备注更新页面保存
+     * @param request
+     * @param clueRemark
+     * @return
+     */
+    @RequestMapping("workbench/clue/detail/updateRemark.do")
+    @ResponseBody
+    public Object updateRemark(HttpServletRequest request,ClueRemark clueRemark){
+        User user = (User) request.getSession().getAttribute(Constants.SESSION_USER);
+
+        try {
+            clueRemark.setEditBy(user.getId());
+            clueRemark.setEditTime(DateUtils.formatDateTime(new Date()));
+
+            int count = clueRemarkService.updateRemark(clueRemark);
+            if (count != 1){
+                return Result.fail("更新失败");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail("更新失败了");
+        }
+        return Result.success();
+    }
+
+    /**
+     * 新增备注
+     * @param clueRemark
+     * @return
+     */
+    @RequestMapping("workbench/clue/detail/detailRemarkInsert.do")
+    @ResponseBody
+    public Object detailRemarkInsert(HttpServletRequest request,ClueRemark clueRemark){
+
+        User user = (User) request.getSession().getAttribute(Constants.SESSION_USER);
+
+        try {
+            //添加主键 创建者 创建时间
+            clueRemark.setId(UUIDUtils.getUUID());
+            clueRemark.setCreateBy(user.getId());
+            clueRemark.setCreateTime(DateUtils.formatDateTime(new Date()));
+
+            int count = clueRemarkService.saveDetailRemark(clueRemark);
+            if (count != 1){
+                return Result.fail("保存失败");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail("保存失败了");
+        }
+        return Result.success();
+    }
+
+    /**
+     * 删除备注按钮
+     * @param id
+     * @return
+     */
+    @RequestMapping("workbench/clue/detail/deleteDiv.do")
+    @ResponseBody
+    public Object deleteDiv(String id){
+        try {
+            int count = clueRemarkService.deleteDiv(id);
+            if (count != 1){
+                return Result.fail("删除失败");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail("删除失败了");
+        }
+        return Result.success();
+    }
+
+    /**
+     * 关联市场活动查看列表
+     * @return
+     */
+    @RequestMapping("workbench/clue/detail/showConvert.do")
+    @ResponseBody
+    public Object showConvert(@RequestParam(value = "clueId",required = false) String clueId,
+                              @RequestParam(value = "searchActivityName",required = false) String searchActivityName){
+        Map<String,Object> map = new HashMap<>();
+        map.put("clueId",clueId);
+        map.put("searchActivityName",searchActivityName);
+        List<Activity> list = activityService.exportShowConvert(map);
+        return list;
+    }
+
+    /**
+     * 查询全部关联的市场活动
+     * @param id
+     * @return
+     */
+    @RequestMapping("workbench/clue/detail/queryAllClueActivityRelation.do")
+    @ResponseBody
+    public Object queryAllClueActivityRelation(String id){
+        List<Activity> activityList = activityService.queryAllClueActivityRelation(id);
+        return activityList;
+    }
+
+    /**
+     * 解除关联
+     * @param id
+     * @return
+     */
+    @RequestMapping("workbench/clue/detail/deleteRelation.do")
+    @ResponseBody
+    public Object deleteRelation(String clueId,String id){
+        Map<String,Object> map = new HashMap<>();
+        try {
+            map.put("clueId", clueId);
+            map.put("id", id);
+
+            int count = clueActivityRelationService.deleteRelation(map);
+            if (count != 1){
+                return Result.fail("解除关联失败");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail("解除关联失败了");
+        }
+        return Result.success();
+    }
+
+    /**
+     * 新增关联市场活动
+     * @param id
+     * @return
+     */
+    @RequestMapping("workbench/clue/detail/saveBundActivity.do")
+    @ResponseBody
+    public Object saveBundActivity(@RequestParam(value = "id",required = true) String[] id,
+                                   @RequestParam(value = "clueId",required = true)String clueId){
+
+        List<ClueActivityRelation> list = new ArrayList<>();
+        ClueActivityRelation clueActivityRelation = null;
+        int count = 0;
+        try {
+
+            for (String s : id) {
+                clueActivityRelation = new ClueActivityRelation();
+                clueActivityRelation.setId(UUIDUtils.getUUID());
+                clueActivityRelation.setActivityId(s);
+                clueActivityRelation.setClueId(clueId);
+                list.add(clueActivityRelation);
+            }
+            count = clueActivityRelationService.saveBundActivity(list);
+
+            if (count == 0){
+                return Result.fail("新增失败");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail("新增失败了");
+        }
+        return Result.success();
+    }
+
+    /**
+     * 转换按钮跳转页面
+     * @return
+     */
+    @RequestMapping("workbench/clue/convert.do")
+    public String convert(HttpServletRequest request,String id){
+        //带名称的
+        Clue clue = clueService.detailClue(id);
+
+        request.setAttribute("clue", clue);
+
+        return "workbench/clue/convert";
+    }
+
+    /**
+     * 转换中的阶段下拉框
+     * @return
+     */
+    @RequestMapping("workbench/clue/convert/queryStageByDicValue.do")
+    @ResponseBody
+    public Object queryStageByDicValue(){
+        List<DicValue> dicValueList = dicValueService.queryAllDicValueSourceAndState("stage");
+        return dicValueList;
+    }
+
+    /**
+     * 线索转化页面，搜索市场活动的单选框
+     * @param clueId
+     * @param searchActivityName
+     * @return
+     */
+    @RequestMapping("workbench/clue/convert/showConvert.do")
+    @ResponseBody
+    public Object convertShowConvert(@RequestParam(value = "id",required = false) String clueId,
+                                     @RequestParam(value = "searchActivityName",required = false) String searchActivityName){
+        Map<String,Object> map = new HashMap<>();
+        map.put("clueId",clueId);
+        map.put("searchActivityName",searchActivityName);
+        List<Activity> list = activityService.convertShowConvert(map);
+        return list;
+    }
+
+    /**
+     * 线索转化
+     * @param request
+     * @param tran
+     * @return
+     */
+    @RequestMapping("workbench/clue/convert/saveConvertByTran.do")
+    @ResponseBody
+    public Object saveConvertByTran(HttpServletRequest request,Tran tran){
+
+        User user = (User) request.getSession().getAttribute(Constants.SESSION_USER);
+
+        try {
+            tran.setId(UUIDUtils.getUUID());
+            tran.setCreateBy(user.getId());
+            tran.setCreateTime(DateUtils.formatDateTime(new Date()));
+
+            int count = tranService.saveConvertByTran(tran);
+            if (count != 1){
+                return Result.fail("转化失败");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail("转化失败了");
+        }
+        return Result.success();
     }
 }

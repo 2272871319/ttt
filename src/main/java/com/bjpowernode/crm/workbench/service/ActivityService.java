@@ -73,4 +73,20 @@ public interface ActivityService {
      * @return
      */
     int saveImportActivityList(List<Activity> activityList);
+
+    List<Activity> queryAllClueActivityRelation(String id);
+
+    /**
+     * 关联市场活动查看列表
+     * @param map
+     * @return
+     */
+    List<Activity> exportShowConvert(Map<String,Object> map);
+
+    /**
+     * 线索转化页面，搜索市场活动的单选框
+     * @param map
+     * @return
+     */
+    List<Activity> convertShowConvert(Map<String, Object> map);
 }

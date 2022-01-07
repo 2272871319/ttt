@@ -109,5 +109,6 @@
     select <include refid="Base_Column_List"></include>
     from tbl_dic_value
     where type_code = #{typeCode}
+    order by order_no
   </select>
 </mapper>

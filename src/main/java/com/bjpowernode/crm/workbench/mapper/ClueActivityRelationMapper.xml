@@ -10,7 +10,7 @@
     id, clue_id, activity_id
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from tbl_clue_activity_relation
     where id = #{id,jdbcType=CHAR}
@@ -68,4 +68,19 @@
       activity_id = #{activityId,jdbcType=CHAR}
     where id = #{id,jdbcType=CHAR}
   </update>
+
+  <delete id="deleteRelation">
+    delete from tbl_clue_activity_relation
+    where clue_id = #{clueId} and activity_id = #{id}
+  </delete>
+
+  <insert id="saveBundActivity">
+    insert into tbl_clue_activity_relation (id, clue_id, activity_id
+    )
+    values
+        <foreach collection="list" item="obj" separator=",">
+          (#{obj.id,jdbcType=CHAR}, #{obj.clueId,jdbcType=CHAR}, #{obj.activityId,jdbcType=CHAR})
+        </foreach>
+
+  </insert>
 </mapper>

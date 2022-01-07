@@ -23,4 +23,10 @@ public interface ClueMapper {
 
     //查询总条数
     Integer queryCountClue(Map<String, Object> map);
+
+    //批量删除
+    int deleteAllPrimaryKey(String[] id);
+    //主键多表查询
+    Clue selectdetailClueByPrimaryKey(String id);
+
 }

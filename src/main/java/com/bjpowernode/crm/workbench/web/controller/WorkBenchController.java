@@ -25,7 +25,19 @@ public class WorkBenchController {
         return "workbench/main/index";
     }
 
+    /**
+     * 客户
+     * @return
+     */
+    @RequestMapping("workbench/customer/index.do")
+    public String customer(){
+        return "workbench/customer/index";
+    }
 
+    @RequestMapping("workbench/contacts/index.do")
+    public String contacts(){
+        return "workbench/contacts/index";
+    }
 
     /**
      * 交易

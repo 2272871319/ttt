@@ -62,4 +62,30 @@ public class ClueServiceImpl implements ClueService {
     public Clue editClue(String id) {
         return clueMapper.selectByPrimaryKey(id);
     }
+
+    /**
+     * 批量删除
+     * @param id
+     * @return
+     */
+    @Override
+    public int deleteAll(String[] id) {
+        return clueMapper.deleteAllPrimaryKey(id);
+    }
+
+    /**
+     * 更新保存
+     * @param clue
+     * @return
+     */
+    @Override
+    public int saveUpdateClue(Clue clue) {
+        return clueMapper.updateByPrimaryKeySelective(clue);
+    }
+
+    @Override
+    public Clue detailClue(String id) {
+        return clueMapper.selectdetailClueByPrimaryKey(id);
+    }
+
 }

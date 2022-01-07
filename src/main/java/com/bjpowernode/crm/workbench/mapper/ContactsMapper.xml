@@ -22,12 +22,12 @@
     <result column="address" jdbcType="VARCHAR" property="address" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, owner, source, customer_id, full_name, appellation, email, mphone, job, birth, 
-    create_by, create_time, edit_by, edit_time, description, contact_summary, next_contact_time, 
+    id, owner, source, customer_id, full_name, appellation, email, mphone, job, birth,
+    create_by, create_time, edit_by, edit_time, description, contact_summary, next_contact_time,
     address
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from tbl_contacts
     where id = #{id,jdbcType=CHAR}
@@ -37,18 +37,18 @@
     where id = #{id,jdbcType=CHAR}
   </delete>
   <insert id="insert" parameterType="com.bjpowernode.crm.workbench.domain.Contacts">
-    insert into tbl_contacts (id, owner, source, 
-      customer_id, full_name, appellation, 
-      email, mphone, job, 
-      birth, create_by, create_time, 
-      edit_by, edit_time, description, 
+    insert into tbl_contacts (id, owner, source,
+      customer_id, full_name, appellation,
+      email, mphone, job,
+      birth, create_by, create_time,
+      edit_by, edit_time, description,
       contact_summary, next_contact_time, address
       )
-    values (#{id,jdbcType=CHAR}, #{owner,jdbcType=CHAR}, #{source,jdbcType=VARCHAR}, 
-      #{customerId,jdbcType=CHAR}, #{fullName,jdbcType=VARCHAR}, #{appellation,jdbcType=VARCHAR}, 
-      #{email,jdbcType=VARCHAR}, #{mphone,jdbcType=VARCHAR}, #{job,jdbcType=VARCHAR}, 
-      #{birth,jdbcType=CHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=CHAR}, 
-      #{editBy,jdbcType=VARCHAR}, #{editTime,jdbcType=CHAR}, #{description,jdbcType=VARCHAR}, 
+    values (#{id,jdbcType=CHAR}, #{owner,jdbcType=CHAR}, #{source,jdbcType=VARCHAR},
+      #{customerId,jdbcType=CHAR}, #{fullName,jdbcType=VARCHAR}, #{appellation,jdbcType=VARCHAR},
+      #{email,jdbcType=VARCHAR}, #{mphone,jdbcType=VARCHAR}, #{job,jdbcType=VARCHAR},
+      #{birth,jdbcType=CHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=CHAR},
+      #{editBy,jdbcType=VARCHAR}, #{editTime,jdbcType=CHAR}, #{description,jdbcType=VARCHAR},
       #{contactSummary,jdbcType=VARCHAR}, #{nextContactTime,jdbcType=CHAR}, #{address,jdbcType=VARCHAR}
       )
   </insert>
@@ -245,4 +245,16 @@
       address = #{address,jdbcType=VARCHAR}
     where id = #{id,jdbcType=CHAR}
   </update>
+
+  <select id="selectByTwoId" resultMap="BaseResultMap">
+    select t.id, t.owner, t.source, t.customer_id, t.full_name, t.appellation, t.email, t.mphone, t.job, birth,
+           t.create_by, t.create_time, t.edit_by, t.edit_time, t.description, t.contact_summary, t.next_contact_time,
+           t.address
+from
+     tbl_contacts t
+left join
+         tbl_clue c
+on c.owner = t.owner
+where c.id = #{id}
+  </select>
 </mapper>
